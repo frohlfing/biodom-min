@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Frank")(type "KiCad")(uri "${KIPRJMOD}/footprints/Frank.pretty")(options "")(descr "Footprints für Biodom Mini"))
+)

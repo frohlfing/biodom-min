@@ -1,0 +1,68 @@
+(footprint "Mounting_Hole_M3"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Montageloch für M3-Schrauben")
+	(property "Reference" "REF**"
+		(at 0 -3.175 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "3ded6897-aff8-42dc-8023-dcfec97d39ef")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "Mounting_Hole_M3"
+		(at 0 3.175 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "92b5a8a8-daaf-4e37-8919-f745809aca23")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "5292c3a9-ddc6-489e-9f9f-fea830c1fc3c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "10cff810-82c8-43e7-bad6-1f5911d368d2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole board_only exclude_from_bom)
+	(pad "" np_thru_hole roundrect
+		(at 0 0)
+		(size 2.54 1.27)
+		(drill 3.2)
+		(layers "F&B.Cu" "*.Mask")
+		(roundrect_rratio 0.15)
+		(uuid "a6279152-3a38-478e-8fc0-5e4887b5f345")
+	)
+	(embedded_fonts no)
+)
