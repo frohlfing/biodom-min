@@ -601,9 +601,9 @@ So wird der Pegel auf HIGH (+3.3V) gezogen, wenn Trockenheit erkannt wird.
 └────────────────┘    
 </pre>
 
-**Benötigte Bibliothek:**
+**Sketch für Funktionstest:**
 
-(keine Abhängigkeit)
+TODO
 
 ### S6: Lichtstärke
 
@@ -648,7 +648,7 @@ Da kein anderes I2C-Gerät die Adresse 0x23 verwenden, wird ADDR nicht benötigt
 
 **Benötigte Bibliothek:**
 
-* BH1750 1.3.0 by Christofer Laws
+* BH1750 1.3.0 von Christofer Laws
 
 ### S7: Reserve
 

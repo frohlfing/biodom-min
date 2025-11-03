@@ -648,7 +648,7 @@ Da kein anderes I2C-Gerät die Adresse 0x23 verwenden, wird ADDR nicht benötigt
 
 **Benötigte Bibliothek:**
 
-* BH1750 1.3.0 by Christofer Laws
+* BH1750 1.3.0 von Christofer Laws
 
 ### S7: Reserve
 

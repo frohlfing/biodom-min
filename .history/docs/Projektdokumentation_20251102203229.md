@@ -428,6 +428,7 @@ Wird zwischen dem roten Kabel (VCC) und dem gelben Kabel (DATA) an die Buchsenle
 
 **Benötigte Bibliothek:**
 
+* OneWire 2.3.9 by Paul Stoffregen
 * DallasTemperature 4.0.5 by Miles Burton
 
 ### S4: Bodenfeuchte
@@ -484,9 +485,11 @@ Darüber steht nichts im Datenblatt. Die Werte habe ich experimental ermittelt.
 * Komplett trocken (in der Luft): 2080 mV
 * Komplett feucht (im Wasser): 800 mV 
 
+**Sketch für Funktionstest:**
+
 **Benötigte Bibliothek:**
 
-(keine Abhängigkeit)
+TODO
 
 **Kalibrierung:**
 
@@ -601,9 +604,9 @@ So wird der Pegel auf HIGH (+3.3V) gezogen, wenn Trockenheit erkannt wird.
 └────────────────┘    
 </pre>
 
-**Benötigte Bibliothek:**
+**Sketch für Funktionstest:**
 
-(keine Abhängigkeit)
+TODO
 
 ### S6: Lichtstärke
 
@@ -646,9 +649,9 @@ Dieser Sensor ist sehr genau und misst das Licht direkt in LUX.
 
 Da kein anderes I2C-Gerät die Adresse 0x23 verwenden, wird ADDR nicht benötigt.
 
-**Benötigte Bibliothek:**
+**Sketch für Funktionstest:**
 
-* BH1750 1.3.0 by Christofer Laws
+TODO
 
 ### S7: Reserve
 

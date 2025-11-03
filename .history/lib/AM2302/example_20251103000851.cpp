@@ -17,7 +17,7 @@ void setup() {
     Serial.println("Starte AM2302-Test...");
 }
 
-void loop() {a
+void loop() {
     if (sensor.read()) {
         Serial.print(">");
         Serial.print("Temperatur:"); // °C

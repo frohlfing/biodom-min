@@ -601,9 +601,9 @@ So wird der Pegel auf HIGH (+3.3V) gezogen, wenn Trockenheit erkannt wird.
 └────────────────┘    
 </pre>
 
-**Benötigte Bibliothek:**
+**Sketch für Funktionstest:**
 
-(keine Abhängigkeit)
+TODO
 
 ### S6: Lichtstärke
 
@@ -646,9 +646,9 @@ Dieser Sensor ist sehr genau und misst das Licht direkt in LUX.
 
 Da kein anderes I2C-Gerät die Adresse 0x23 verwenden, wird ADDR nicht benötigt.
 
-**Benötigte Bibliothek:**
+**Sketch für Funktionstest:**
 
-* BH1750 1.3.0 by Christofer Laws
+TODO
 
 ### S7: Reserve
 
