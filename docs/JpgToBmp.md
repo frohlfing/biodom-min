@@ -58,11 +58,8 @@ Der Kern des Problems ist die Umwandlung (Transformation) von Daten. Wir müssen
 
 ### Schritte zur Umsetzung (Proof Of Concept)
 
-1.  **PoC Schritt 1 (Bitmap anzeigen):**
-Wir stellen sicher, dass wir die `U8g2`-Bibliothek und das Display beherrschen und wissen, wie das Ziel-Datenformat (XBM) aussehen muss.
-
-2.  **PoC Schritt 2 (Eigenes JPG als Byte-Array):**
-Wir validieren Schritt 1 mit einem echten Bild, das von einem Online-Tool konvertiert wurde. Das gibt uns ein konkretes Ziel, das unsere eigene Funktion erreichen muss. 
+1.  **PoC Schritt 1 (Eigenes JPG als Byte-Array anzeigen):**
+Wir stellen den Code zusammen, um ein Bitmap auf dem Display anzeigen zu können. Wir nehmen dann ein JPG-Bild und konvertieren es mit eine einem Online-Tool zum Bitmap (XBM-Format). 
 
 => Als Bild hab ich mein Portrait gewählt, es mit GIMP auf 128x64 Pixel verkleinert und als JPG gespeichert:
 
@@ -72,8 +69,8 @@ Das JPG-Bild hab ich dann dem Tool [Online Image Converter to XBM](https://www.o
 
 ![XBM-Bild](./assets/frank_128x64.XBM.png)
 
-3.  **PoC Schritt 3 (Eigene Konverter-Funktion):**
-Hier implementieren wir die Kernlogik (TJpgDec, Skalierung, Dithering) und vergleichen das Ergebnis mit dem aus Schritt 2.
+2.  **PoC Schritt 2 (Eigene Konverter-Funktion):**
+Hier implementieren wir die Kernlogik (TJpgDec, Skalierung, Dithering) und vergleichen das Ergebnis mit dem aus Schritt 1.
 
-4.  **PoC Schritt 4 (Stream-Verarbeitung):**
+3.  **PoC Schritt 4 (Stream-Verarbeitung):**
 Hier abstrahieren wir die Funktion, sodass sie nicht mehr von einer festen Datei abhängt, sondern jeden beliebigen Datenstrom verarbeiten kann.
