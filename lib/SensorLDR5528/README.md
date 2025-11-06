@@ -1,7 +1,8 @@
 # 📌 SensorLDR5528
 
-Ein einfacher Treiber für den Fotowiderstand LDR5528. Die Bibliothek bietet:
+Diese Bibliothek kapselt die Nutzung des Fotowiderstands LDR5528. 
 
+Features:
 * Roh-ADC-Lesung
 * Berechnung des LDR-Widerstands (Ohm)
 * Approximative Umrechnung in Lux (empirisch)

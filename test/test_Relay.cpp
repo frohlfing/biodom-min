@@ -1,12 +1,10 @@
+/**
+ * Unit-Test für die Relay-Bibliothek
+ */
+
 #include <Arduino.h>
 #include <unity.h>
 #include "Relay.h"
-
-/*
- * Unit-Test-Hinweis:
- * - Dieser Test geht davon aus, dass auf der Testhardware der angegebene Pin existiert.
- * - Auf Host-Systemen ohne GPIOs müssen digitalWrite / pinMode / millis gemockt werden.
- */
 
 Relay testRelay(25, false, false); // GPIO25, activeHigh=false, safeState=false (aus)
 

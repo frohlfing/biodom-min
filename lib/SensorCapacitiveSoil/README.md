@@ -1,6 +1,6 @@
 # SensorCapacitiveSoil
 
-Diese Bibliothek kapselt die Nutzung des kapazitiven Bodenfeuchtesensors V1.2 (analog), auch bekannt als "Capacitive Soil Moisture Sensor".
+Diese Bibliothek kapselt die Nutzung des kapazitiven Bodenfeuchtesensors v1.2, auch bekannt als "Capacitive Soil Moisture Sensor v1.2" oder "Hygrometer Module v1.2".
 
 ## Funktionen
 

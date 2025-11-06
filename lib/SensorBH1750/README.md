@@ -1,6 +1,8 @@
 # SensorBH1750
 
-Diese Bibliothek kapselt die Nutzung des Lichtsensors GY-302 (BH1750) in einer kompakten, leicht testbaren Klasse.
+Diese Bibliothek kapselt die Nutzung des Lichtsensors GY-302 (BH1750) 
+
+BH1750 ist der eigentliche Chips des Sensors, GY-302 bezeichnet das eingesetzte Modul.
 
 ## 📦 Installation
 
@@ -10,12 +12,6 @@ Diese Bibliothek kapselt die Nutzung des Lichtsensors GY-302 (BH1750) in einer k
 lib_deps =
   claws/BH1750 @ ^1.3.0
 ```
-
-## Bugfix
-
-Die Bibliothek verwendet BH1750, die wiederum OneWire 2.3.8 von PaulStoffregen. Diese Version hat ein Bug: "extra tokens at end of #undef directive".
-
-Zum fixen einfach die Datei [OneWire.cpp](./../../.pio/libdeps/debug/OneWire/OneWire.cpp) wie im [Issure 158](https://github.com/PaulStoffregen/OneWire/pull/158/commits/62c66991204bf07e7477df49fb06c2bb3b3fc363) beschrieben modifizieren.
 
 ## Hinweis für Entwickler
 

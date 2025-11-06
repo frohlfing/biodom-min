@@ -1,13 +1,10 @@
+/**
+ * Unit-Test für die LED-Bibliothek
+ */
+
 #include <Arduino.h>
 #include <unity.h>
 #include "LED.h"
-
-/*
- * Hinweis:
- * Dieser Test läuft auf echter Hardware (z. B. ESP32, Arduino). Er nutzt kurze
- * Delays, um Blink-Zustände zu prüfen. In Host-Umgebungen ohne GPIO/Timing
- * muss digitalWrite/ millis() ggf. gemockt werden.
- */
 
 LED led(5, true); // GPIO5
 

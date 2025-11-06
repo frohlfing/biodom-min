@@ -1,6 +1,8 @@
 /*
-Relay Test
+Funktionstest für ein Relay.
 */
+
+#include <Arduino.h>
 
 uint8_t pinRelay = 25;
 

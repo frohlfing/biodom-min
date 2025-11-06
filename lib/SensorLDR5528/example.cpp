@@ -1,3 +1,7 @@
+/**
+ * Beispiel zur Nutzung der SensorLDR5528-Bibliothek
+ */
+
 #include <Arduino.h>
 #include "SensorLDR5528.h"
 

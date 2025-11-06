@@ -1,11 +1,8 @@
-/*
-LED Blink Test
+/**
+ * LED Blink Test
+ */
 
-Turns an LED on for one second, then off for one second, repeatedly.
-
-This example code is in the public domain.
-https://docs.arduino.cc/built-in-examples/basics/Blink/
-*/
+#include <Arduino.h>
 
 #define LED 5
 

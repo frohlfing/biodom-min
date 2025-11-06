@@ -1,6 +1,5 @@
 /**
- * @file example.cpp
- * @brief Beispiel zur Nutzung der DS18B20-Klasse.
+ * Beispiel zur Nutzung der SensorDS18B20-Bibliothek
  * 
  * Das Beispiel liest alle zwei Sekunden die Bodentemperatur vom Sensor und sendet sie über die serielle Schnittstelle. 
  * 

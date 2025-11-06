@@ -1,3 +1,7 @@
+/**
+ * Unit-Test für die SensorCapacitiveSoil-Bibliothek
+ */
+
 #include <Arduino.h>
 #include <unity.h>
 #include "SensorCapacitiveSoil.h"

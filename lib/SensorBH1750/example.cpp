@@ -1,6 +1,5 @@
 /**
- * @file example.cpp
- * @brief Beispiel zur Nutzung der SensorBH1750-Klasse.
+ * Beispiel zur Nutzung der SensorBH1750-Bibliothek
  *
  * Liest periodisch (1s) die Beleuchtungsstärke in Lux und sendet sie über die serielle Schnittstelle.
  * Format kompatibel mit Serial Plotter (">Label:Wert,Label2:Wert").

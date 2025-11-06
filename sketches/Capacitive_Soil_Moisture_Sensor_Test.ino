@@ -1,6 +1,8 @@
-/*
-Capacitive Soil Moisture Sensor Test
-*/
+/**
+ * Funktionstest für den kapazitiven Bodenfeuchtesensor V1.2 (Capacitive Soil Sensor V.1.2, analog)
+ */
+
+#include <Arduino.h>
 
 const int valWater = 1100;
 const int valAir = 2500;

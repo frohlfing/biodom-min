@@ -1,21 +1,38 @@
-/*
-MicroSD SPI Module Test
+/**
+ * Funktionstest für den SD Kartenleser (MicroSD SPI Module)
+ * 
+ * Basierend auf dem offiziellen Beispiel der ESP32 Arduino Core SD-Bibliothek:
+ * https://github.com/espressif/arduino-esp32/tree/master/libraries/SD/examples/SD_Test
+ *
+ * Dieser Sketch demonstriert die grundlegende Nutzung des SD-Kartenlesers
+ * über die Arduino SD-Bibliothek auf einem ESP32.
+ *
+ * Die meisten Hilfsfunktionen nehmen ein Argument vom Typ `fs::FS &fs`. 
+ * Dies ist eine Referenz auf ein Dateisystem-Objekt (`FS`). 
+ * `SD` ist eine Instanz davon. Dieser Ansatz macht die Funktionen universell, 
+ * da man ihnen auch andere Dateisysteme wie `SPIFFS` oder `LittleFS` übergeben könnte.
+ *
+ * Weitere Details zur SD-Bibliothek auf einem ESP32 siehe:
+ * https://github.com/espressif/arduino-esp32/tree/master/libraries/SD
+ */
 
-For more info see file README.md in this library or on URL:
-https://github.com/espressif/arduino-esp32/tree/master/libraries/SD
-*/
+// --- Benötigte Bibliotheken ---
+#include <SD.h>   // Die spezifische Implementierung für SD-Karten.
 
-#include "FS.h"
-#include "SD.h"
-#include "SPI.h"
-
-//Uncomment and set up if you want to use custom pins for the SPI communication
+// --- Optionale Neuzuweisung der SPI-Pins ---
+// Wenn dieses Makro aktiviert ist, kann man alternative GPIOs für SPI festlegen.
+// Im Standardfall wird dies nicht benötigt, da die Hardware-SPI-Pins des ESP32 verwendet werden.
 #define REASSIGN_PINS
-int sck = -1;
-int miso = -1;
-int mosi = -1;
-int cs = 16;
+int sck = -1;   // Standard-SCK-Pin (GPIO 18)
+int miso = -1;  // Standard-MISO-Pin (GPIO 19)
+int mosi = -1;  // Standard-MOSI-Pin (GPIO 23)
+int cs = 16;    // Chip Select für die SD-Karte (hier GPIO 16)
 
+// --- Hilfsfunktionen für Dateioperationen ---
+// Diese Funktionen kapseln die jeweilige Funktionalität und geben Statusmeldungen aus.
+// Sie sind universell geschrieben und akzeptieren eine Referenz auf ein beliebiges Dateisystem (&fs).
+
+// Listet den Inhalt eines Verzeichnisses auf.
 void listDir(fs::FS &fs, const char *dirname, uint8_t levels) {
   Serial.printf("Listing directory: %s\n", dirname);
 
@@ -47,6 +64,7 @@ void listDir(fs::FS &fs, const char *dirname, uint8_t levels) {
   }
 }
 
+// Erstellt ein neues Verzeichnis.
 void createDir(fs::FS &fs, const char *path) {
   Serial.printf("Creating Dir: %s\n", path);
   if (fs.mkdir(path)) {
@@ -56,6 +74,7 @@ void createDir(fs::FS &fs, const char *path) {
   }
 }
 
+// Entfernt ein Verzeichnis.
 void removeDir(fs::FS &fs, const char *path) {
   Serial.printf("Removing Dir: %s\n", path);
   if (fs.rmdir(path)) {
@@ -65,6 +84,7 @@ void removeDir(fs::FS &fs, const char *path) {
   }
 }
 
+// Liest den Inhalt einer Datei und gibt ihn seriell aus.
 void readFile(fs::FS &fs, const char *path) {
   Serial.printf("Reading file: %s\n", path);
 
@@ -81,6 +101,7 @@ void readFile(fs::FS &fs, const char *path) {
   file.close();
 }
 
+// Schreibt eine Nachricht in eine Datei (überschreibt existierenden Inhalt).
 void writeFile(fs::FS &fs, const char *path, const char *message) {
   Serial.printf("Writing file: %s\n", path);
 
@@ -97,6 +118,7 @@ void writeFile(fs::FS &fs, const char *path, const char *message) {
   file.close();
 }
 
+// Fügt eine Nachricht am Ende einer Datei an.
 void appendFile(fs::FS &fs, const char *path, const char *message) {
   Serial.printf("Appending to file: %s\n", path);
 
@@ -113,6 +135,7 @@ void appendFile(fs::FS &fs, const char *path, const char *message) {
   file.close();
 }
 
+// Benennt eine Datei um.
 void renameFile(fs::FS &fs, const char *path1, const char *path2) {
   Serial.printf("Renaming file %s to %s\n", path1, path2);
   if (fs.rename(path1, path2)) {
@@ -122,6 +145,7 @@ void renameFile(fs::FS &fs, const char *path1, const char *path2) {
   }
 }
 
+// Löscht eine Datei.
 void deleteFile(fs::FS &fs, const char *path) {
   Serial.printf("Deleting file: %s\n", path);
   if (fs.remove(path)) {
@@ -131,6 +155,7 @@ void deleteFile(fs::FS &fs, const char *path) {
   }
 }
 
+// Führt einen einfachen Lese-/Schreib-Benchmark durch.
 void testFileIO(fs::FS &fs, const char *path) {
   File file = fs.open(path);
   static uint8_t buf[512];
@@ -172,30 +197,31 @@ void testFileIO(fs::FS &fs, const char *path) {
   file.close();
 }
 
-#define LED 5
+#define LED 5  // GPIO5 für die Status-LED
 
+// =======================================================================================
+// SETUP-Funktion: Wird einmal beim Start ausgeführt
+// =======================================================================================
 void setup() {
   pinMode(LED, OUTPUT);
   digitalWrite(LED, LOW);
 
   Serial.begin(115200);
 
-#ifdef REASSIGN_PINS
-  //SPI.begin(sck, miso, mosi, cs);
+  // SD-Karte initialisieren
   if (!SD.begin(cs)) {
-#else
-  if (!SD.begin()) {
-#endif
     Serial.println("Card Mount Failed");
-    return;
+    return; // Abbruch, wenn die Karte nicht initialisiert werden kann.
   }
-  uint8_t cardType = SD.cardType();
 
+  // Abbruch, wenn keine Karte erkannt wird
+  uint8_t cardType = SD.cardType();
   if (cardType == CARD_NONE) {
     Serial.println("No SD card attached");
     return;
   }
 
+  // Typ der Karte anzeigen
   Serial.print("SD Card Type: ");
   if (cardType == CARD_MMC) {
     Serial.println("MMC");
@@ -207,24 +233,31 @@ void setup() {
     Serial.println("UNKNOWN");
   }
 
+  // Kartengröße anzeigen
   uint64_t cardSize = SD.cardSize() / (1024 * 1024);
   Serial.printf("SD Card Size: %lluMB\n", cardSize);
 
+  // Dateioperationen testen
+  Serial.println("Starting test sequence...");
   listDir(SD, "/", 0);
   createDir(SD, "/mydir");
   listDir(SD, "/", 0);
   removeDir(SD, "/mydir");
   listDir(SD, "/", 2);
   writeFile(SD, "/hello.txt", "Hello ");
-  appendFile(SD, "/hello.txt", "World!!\n");
+  appendFile(SD, "/hello.txt", "World!\n");
   readFile(SD, "/hello.txt");
   deleteFile(SD, "/foo.txt");
   renameFile(SD, "/hello.txt", "/foo.txt");
   readFile(SD, "/foo.txt");
-  //readFile(SD, "/capture.jpg");
   testFileIO(SD, "/test.txt");
+  Serial.println("Test sequence finished.");
+
+  // Speicherplatz anzeigen
   Serial.printf("Total space: %lluMB\n", SD.totalBytes() / (1024 * 1024));
   Serial.printf("Used space: %lluMB\n", SD.usedBytes() / (1024 * 1024));
 }
 
-void loop() {}
+void loop() {
+  // Nichts zu tun im Loop, alles passiert im Setup.
+}

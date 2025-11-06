@@ -1,22 +1,16 @@
-# OLEDDisplaySH1106 - schlanker U8g2-Wrapper (für ESP32)
+# OLEDDisplaySH1106
 
-Leichter, dokumentierter Wrapper um U8g2 (olikraus). Vereinfacht typische
-Display-Aufgaben (Text, formatierte Textausgabe, Progressbar, Bitmap) und
-liefert zugleich Zugriff auf die rohe U8g2-Instanz für Spezialfälle.
+Diese Bibliothek kapselt die Nutzung des 1.3 Zoll OLED Displays SSH1106.
 
-Warum ein Wrapper statt direkter U8g2-Nutzung?
-- Kürzere, klarere API für Standard-Aufgaben
-- Bessere Lesbarkeit der Sketches
-- Einheitliche Konventionen (z.B. atomare Display-Aktualisierung via display())
+Das Display hat 128x64 Pixel (monochrom, 1 Bit pro Pixel) und wird über die I2C-Schnittstelle gesteuert.
 
-Features gegenüber "nackter" U8g2-Nutzung
-- Vorschub: drawTextf für printf-ähnliche Textformatierung
-- drawProgress: Fertige Fortschrittsleiste
-- drawBitmap: 1-bit XBM-kompatible Bitmap-Hilfe
-- setInverted / setContrast / setRotation: zentrale Steuerfunktionen
-- Robuste Dokumentation: Mouse-Over-Dokumentation für jede Methode
+## Funktionsumfang
 
-## 📦 Installation
+*   **Scrolling Log:** Einfaches Hinzufügen von Textzeilen, die automatisch nach oben scrollen, wenn der Bildschirm voll ist. Ideal für Statusmeldungen beim Booten oder während des Betriebs.
+*   **Dashboard-Ansicht:** Aufteilung des Bildschirms in vier Quadranten, in denen jeweils ein Textwert und optional ein Icon angezeigt werden können. Perfekt für die Anzeige von mehreren Sensorwerten.
+*   **Vollbild-Warnung:** Anzeige einer zentrierten, bildschirmfüllenden Nachricht, die optional blinken kann, um die Aufmerksamkeit des Nutzers zu erregen.
+
+## 📦 Installation & Abhängigkeiten
 
 * Folgende Bibliothek muss in `platformio.ini` eingebunden werden:
 
@@ -25,14 +19,28 @@ lib_deps =
   olikraus/U8g2 @ ^2.36.15
 ```
 
-## Hinweise & Tipps
+## 📌 Wichtige Hinweise
 
-- Fonts: U8g2 bringt viele eingebaute Fonts. Nutze `u8g2()->setFont(...)` über `u8g2()` falls du Spezialfonts brauchst.
-- Performance: Verwende die Full-Buffer-Constructors (`*_F_*`) wenn dein ESP32 genug RAM hat (vereinfacht drawing), oder Page-buffered (`*_1_*`) um RAM zu sparen.
-- Rotation: Manche Displays/Treiber verhalten sich hardwareabhängig bei Rotation; überprüfe deine physische Ausrichtung nach setRotation.
-- Bitmap-Format: `drawBitmap` verwendet U8g2 XBM-Format (MSB-first, byte-per-row packing).
-- Lizenz: Diese Wrapper-Lib ist MIT; U8g2 hat eigene Lizenzbedingungen (siehe upstream).
+### Pin-Belegung
+
+Das Display wird über I2C angesteuert. Die Standard-Hardware-I2C-Pins des ESP32 sind:
+*   **SDA:** GPIO 21
+*   **SCL:** GPIO 22
+
+Stelle sicher, dass keine anderen Geräte auf dem I2C-Bus die gleiche Adresse verwenden.
+
+### U8g2-Konstruktor
+
+Diese Bibliothek ist fest für ein **128x64 SH1106 I2C Display** konfiguriert. Dies ist im Konstruktor `U8G2_SH1106_128X64_NONAME_F_HW_I2C` festgelegt. Für ein anderes Display (z.B. mit SSD1306-Controller oder anderer Auflösung) muss der Konstruktor in der `.cpp`-Datei angepasst werden.
+
+### Der `update()`-Loop
+
+Für zeitbasierte Effekte wie das Blinken der Warnmeldung ist es zwingend erforderlich, die Methode `display.update()` regelmäßig in der `loop()`-Funktion des Hauptprogramms aufzurufen.
+
+### Speicherverbrauch
+
+Die Bibliothek verwendet den "Full Buffer"-Modus (`_F_`) von U8g2. Dies bietet die beste Darstellungsqualität, belegt aber permanent 1024 Bytes (128 * 64 / 8) des RAM-Speichers auf dem ESP32.
 
 ## 📜 Lizenz
 
-Diese Bibliothek basiert auf [U8g2 by Oliver Kraus](https://github.com/olikraus/u8g2). Sie folgt deren Lizenzbedingungen ([2‑Clause BSD License](https://github.com/olikraus/u8g2?tab=License-1-ov-file), auch "New BSD" genannt; einzelne Fonts und Beispiel‑HALs können abweichende Lizenzen haben).
+Diese Bibliothek basiert auf [U8g2 library by oliver (olikraus)](https://github.com/olikraus/u8g2). Sie folgt deren Lizenzbedingungen ([2-Clause BSD License](https://github.com/olikraus/u8g2/blob/master/LICENSE)).

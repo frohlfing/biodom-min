@@ -1,13 +1,9 @@
-/**
- * @file SensorCapacitiveSoil.h
- * @brief Lokale Kapselung für den kapazitiven Bodenfeuchtesensor V1.2 (analog).
- */
-
 #pragma once
+
 #include <Arduino.h>
 
 /**
- * @brief Klasse für den kapazitiven Bodenfeuchtesensor V1.2 (analog).
+ * Klasse für den kapazitiven Bodenfeuchtesensor V1.2 (Capacitive Soil Moisture Sensor v1.2, analog)
  *
  * Wandelt den analogen Messwert in Prozent um (0–100 %).
  */

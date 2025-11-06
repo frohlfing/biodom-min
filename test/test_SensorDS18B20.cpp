@@ -1,8 +1,5 @@
 /**
- * @file test_main.cpp
- * @brief Unit-Test für die SensorDS18B20-Klasse mit Unity.
- * 
- * Testet die Sensorinitialisierung und Temperaturmessung.
+ * Unit-Test für die SensorDS18B20-Bibliothek
  */
 
 #include <Arduino.h>

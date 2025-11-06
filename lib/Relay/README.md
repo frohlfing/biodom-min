@@ -1,6 +1,6 @@
 # Relay
 
-Ein kleiner, zuverlässiger Treiber für ein einzelnes Relais-Modul.
+Diese Bibliothek kapselt die Nutzung eines einzelnen Relais (mit Optokoppler).
 
 ## Eigenschaften
 

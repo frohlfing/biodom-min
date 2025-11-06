@@ -1,14 +1,10 @@
-/**
- * @file SensorDS18B20.h
- * @brief Lokale Kapselung für den Bodentemperatursensor DS18B20.
- */
-
 #pragma once
+
 #include <Arduino.h>
 #include <DallasTemperature.h>
 
 /**
- * @brief Klasse für den Bodentemperatursensor DS18B20.
+ * Klasse für den Bodentemperatursensor DS18B20
  */
 class SensorDS18B20 {
 public:

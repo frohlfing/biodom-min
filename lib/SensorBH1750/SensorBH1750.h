@@ -1,14 +1,10 @@
-/**
- * @file SensorBH1750.h
- * @brief Lokale Kapselung für das Lichtsensormodul GY-302 (BH1750, I2C).
- */
-
 #pragma once
+
 #include <Arduino.h>
 #include <BH1750.h>
 
 /**
- * @brief Klasse für das Lichtsensormodul GY-302.
+ * @brief Klasse für den Lichtsensor GY-302 (BH1750)
  */
 class SensorBH1750 {
 public:

@@ -1,6 +1,9 @@
 # SensorAM2302-Bibliothek
 
-Diese Bibliothek kapselt die Nutzung des Luftsensors AM2302 (auch bekannt als DHT22). 
+Diese Bibliothek kapselt die Nutzung des Raumtemperatur- und Luftfeuchtigkeitssensor AM2302, auch bekannt als DHT22. 
+In der Projektdokumentation wird er von mir auch "Luftsensor" genannt. 
+
+Der Sensor ist als Modul und auch "pur" ohne Modul erhältlich (was für die Klasse egal ist :-). 
 
 ## 📦 Installation
 

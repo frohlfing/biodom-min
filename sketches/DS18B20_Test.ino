@@ -1,6 +1,6 @@
-/*
-DS18B20 Test
-*/
+/**
+ * Funktionstest für den Bodentemperatursensor DS18B20
+ */
 
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -14,25 +14,20 @@ OneWire oneWire(ONE_WIRE_BUS);
 // Pass our oneWire reference to Dallas Temperature.
 DallasTemperature sensors(&oneWire);
 
-void setup(void)
-{
+void setup(void) {
   Serial.begin(115200);
   Serial.println("DS18B20 Test");
   sensors.begin();
 }
 
-void loop(void)
-{
+void loop(void) {
   sensors.requestTemperatures();
   delay(1500);
   float tempC = sensors.getTempCByIndex(0);
-  if (tempC != DEVICE_DISCONNECTED_C)
-  {
+  if (tempC != DEVICE_DISCONNECTED_C) {
     Serial.print("Temperature:");
     Serial.println(tempC);
-  }
-  else
-  {
+  } else {
     Serial.println("Error: Could not read temperature data");
   }
 }

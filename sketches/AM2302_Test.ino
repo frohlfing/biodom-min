@@ -1,6 +1,6 @@
-/*
-AM2302 (DHT22) Test
-*/
+/**
+ * Funktionstest für den Raumtemperatur- und Luftfeuchtigkeitssensor AM2302, auch bekannt als DHT22
+ */
 
 #include <SimpleDHT.h>
 

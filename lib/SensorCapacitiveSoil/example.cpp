@@ -1,6 +1,5 @@
 /**
- * @file example.cpp
- * @brief Beispiel zur Nutzung der SensorCapacitiveSoil-Klasse.
+ * Beispiel zur Nutzung der SensorCapacitiveSoil-Bibliothek
  *
  * Das Beispiel liest alle zwei Sekunden den kapazitiven Bodenfeuchtesensor (analog)
  * und gibt Rohwert sowie Prozent über die serielle Schnittstelle aus.

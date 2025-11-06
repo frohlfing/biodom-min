@@ -1,6 +1,8 @@
-/*
-LDR5528 Test
-*/
+/**
+ * Funktionstest für den Fotowiderstand LDR5528
+ */
+
+#include <Arduino.h>
 
 const int valLight = 1100;
 const int valDark = 2500;

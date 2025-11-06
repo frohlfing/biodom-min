@@ -1,6 +1,5 @@
 /**
- * @file example.cpp
- * @brief Beispiel zur Nutzung der SensorXKCY25NPN-Klasse.
+ * Beispiel zur Nutzung der SensorXKCY25NPN-Bibliothek
  */
 
 #include <Arduino.h>

@@ -1,30 +1,38 @@
-# MicroSDCard (SdFat-only, fokussiert auf ESP32)
+# MicroSDCard
 
-SdFat-basiertes, gepuffertes SD-Wrapper-Modul. Ziel ist eine einfache API für robustes Schreiben/Lesen großer Binärdateien (z. B. Kamerabilder) und für Text/Logdateien. Die Implementierung nutzt double-buffered streaming auf Sektor-Ebene und atomare Writes (tmp -> rename).
+Diese Bibliothek kapselt die Nutzung des SD-Kartenlesers (MicroSD SPI Modules) für den ESP32
 
-Highlights gegenüber esp32/SD (Standard):
-- Buffering / gepufferte I/O (SdFat): höhere Schreibleistung und geringere Latenz.
-- Double-buffered Stream-API: entkoppelt Datenproduktion (z. B. Kamera) vom SD-Write. Die Standard-Puffergröße sit 512 B (1 Sektor). Für höhere Datenraten erhöhe bufferSectors (2–4 empfohlen).
-- Atomare Datei-Operationen (tmp -> rename) reduzieren Risiko von Korruption.
-- SdFat bietet optionale exFAT-Unterstützung, Dedicated SPI und feine Konfigurierbarkeit.
-- Besser geeignet für hohe Datenraten, kontinuierliche Aufnahme oder Kameraintegration.
+## Funktionsumfang
 
-## 📦 Installation
+*   Einfache Initialisierung der SD-Karte mit `begin()`.
+*   Methoden zum Erstellen, Löschen und Auflisten von Verzeichnissen.
+*   Methoden zum Schreiben, Lesen, Anhängen, Umbenennen und Löschen von Dateien.
+*   Bequemes Auslesen kleiner Textdateien direkt in einen `String`.
+*   Effizientes Lesen großer Dateien direkt in einen `Stream`.
+*   Abfrage von Karteninformationen wie Typ, Gesamtgröße und belegtem Speicher.
 
-* Folgende Bibliothek muss in `platformio.ini` eingebunden werden:
+## 📦 Installation & Abhängigkeiten
 
-```ini
-lib_deps =
-  greiman/SdFat @ ^2.3.1
-```
+Diese Bibliothek hat **keine externen Abhängigkeiten**. Sie verwendet die `SD`- und `FS`-Bibliotheken, die bereits im ESP32 Arduino Core Framework enthalten sind.
 
-## 🔧 Hinweise zur Praxis
+## 🔧 Wichtige Hinweise
 
-- Verwende 3.3V-kompatible SD-Module und kurze SPI-Leitungen; bei langen Leitungen SPI-Clock reduzieren.
-- Für Kameras mit konstant hoher Datenrate: erhöhe bufferSectors auf 2–4.
-- Unit-Tests sind hardware-abhängig; für CI ohne SD-Karte ist ein Mock erforderlich.
+### Pin-Belegung
+
+Das SD-Kartenmodul wird über SPI angebunden. Die Standard-Hardware-SPI-Pins des ESP32 sind:
+*   **MOSI:** GPIO 23
+*   **MISO:** GPIO 19
+*   **SCK:** GPIO 18
+*   **CS (Chip Select):** **Muss exklusiv sein!** Der Pin kann frei gewählt und dem Konstruktor übergeben werden (z.B. GPIO 16).
+
+### Kabellänge
+
+Verwende kurze SPI-Leitungen; bei langen Leitungen SPI-Clock reduzieren.
+
+### Dateisystem
+
+Die Bibliothek ist für SD-Karten ausgelegt, die mit einem **FAT16**- oder **FAT32**-Dateisystem formatiert sind. Dies ist der Standard für die meisten SD-Karten.
 
 ## 📜 Lizenz
 
-Diese Bibliothek basiert auf [SdFat by Bill Greiman](https://github.com/greiman/SdFat). Sie folgt deren Lizenzbedingungen ([MIT](https://github.com/greiman/SdFat?tab=MIT-1-ov-file)).
-
+Diese Bibliothek ist ein Wrapper für die SD-Karten-Implementierung des [ESP32 Arduino Core](https://github.com/espressif/arduino-esp32). Sie folgt deren Lizenzbedingungen.

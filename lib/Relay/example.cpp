@@ -1,8 +1,11 @@
+/**
+ * Beispiel zur Nutzung der Relay-Bibliothek
+ */
+
 #include <Arduino.h>
 #include "Relay.h"
 
-// Beispiel für ein einzelnes Relais an Pin 14 (anpassen)
-Relay pumpRelay(25, false, false);  // GPIO25, activeHigh=false, safeState=false
+Relay pumpRelay(25, false, false);  // GPIO25
 
 void setup() {
   Serial.begin(115200);

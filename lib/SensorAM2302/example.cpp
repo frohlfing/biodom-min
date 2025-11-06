@@ -1,6 +1,5 @@
 /**
- * @file example.cpp
- * @brief Beispiel zur Nutzung der SensorAM2302-Klasse.
+ * Beispiel zur Nutzung der SensorAM2302-Bibliothek
  * 
  * Das Beispiel liest alle zwei Sekunden die Raumtemperatur und die Luftfeuchtigkeit vom Sensor und sendet sie über die serielle Schnittstelle. 
  * 

@@ -1,118 +1,140 @@
-/**
- * @file OLEDDisplaySH1106.cpp
- * Implementierung des OLEDDisplaySH1106 Wrappers.
- */
-
 #include "OLEDDisplaySH1106.h"
-#include <stdarg.h>
 
-OLEDDisplaySH1106::OLEDDisplaySH1106(U8G2 *u8g2)
-  : _u8g2(u8g2), _inverted(false) {}
+OLEDDisplaySH1106::OLEDDisplaySH1106(const uint8_t resetPin)
+    : _u8g2(U8G2_R0, resetPin)
+{
+}
 
-bool OLEDDisplaySH1106::begin() {
-  if (!_u8g2) return false;
-  _u8g2->begin();
-  // Standard-Font und Clear
-  _u8g2->setFont(u8g2_font_ncenB08_tr);
-  _u8g2->clearBuffer();
-  _u8g2->sendBuffer();
-  _inverted = false;
-  return true;
+void OLEDDisplaySH1106::begin() {
+    _u8g2.begin();
 }
 
 void OLEDDisplaySH1106::clear() {
-  if (!_u8g2) return;
-  _u8g2->clearBuffer();
+    _currentMode = NONE;
+    _u8g2.clearBuffer();
+    _u8g2.sendBuffer();
 }
 
-void OLEDDisplaySH1106::display() {
-  if (!_u8g2) return;
-  if (_inverted) {
-    _u8g2->setDrawColor(0); // inverted: draw color 0 on inverted background
-    // For inversion we flip with sendBuffer + display flip command if available.
-    // Simpler: let caller flip by setInverted(); here we draw buffer normally.
-  } else {
-    _u8g2->setDrawColor(1);
-  }
-  _u8g2->sendBuffer();
+void OLEDDisplaySH1106::update() {
+    if (_currentMode == ALERT && _isBlinking) {
+        // Blink-Logik: Alle 500ms den Sichtbarkeitsstatus wechseln
+        if (millis() - _lastBlinkTime > 500) {
+            _lastBlinkTime = millis();
+            _alertVisible = !_alertVisible;
+            _drawFullscreenAlert(); // Neuzeichnen mit geändertem Status
+        }
+    }
 }
 
-void OLEDDisplaySH1106::drawText(int x, int y, const char* text) {
-  if (!_u8g2 || !text) return;
-  _u8g2->drawStr(x, y, text);
+// --- Log-Modus ---
+
+void OLEDDisplaySH1106::addLogLine(const String &text) {
+    _currentMode = LOG;
+    if (_logLineCount < LOG_MAX_LINES) {
+        // Puffer hat noch Platz
+        _logLines[_logLineCount++] = text;
+    } else {
+        // Puffer ist voll, alle Zeilen nach oben schieben
+        for (int i = 0; i < LOG_MAX_LINES - 1; i++) {
+            _logLines[i] = _logLines[i + 1];
+        }
+        _logLines[LOG_MAX_LINES - 1] = text;
+    }
+    _drawLog();
 }
 
-void OLEDDisplaySH1106::drawTextf(int x, int y, const char* fmt, ...) {
-  if (!_u8g2 || !fmt) return;
-  char buf[128];
-  va_list ap;
-  va_start(ap, fmt);
-  vsnprintf(buf, sizeof(buf), fmt, ap);
-  va_end(ap);
-  _u8g2->drawStr(x, y, buf);
+void OLEDDisplaySH1106::clearLog() {
+    _logLineCount = 0;
+    if (_currentMode == LOG) {
+        clear();
+    }
 }
 
-void OLEDDisplaySH1106::drawProgress(int x, int y, int w, int h, uint32_t value, uint32_t maxValue, bool border) {
-  if (!_u8g2 || w <= 0 || h <= 0) return;
-  if (maxValue == 0) maxValue = 1;
-  uint32_t clamped = value > maxValue ? maxValue : value;
-  int filled = (int)((uint64_t)clamped * (uint32_t)w / maxValue);
-  if (border) {
-    _u8g2->drawFrame(x, y, w, h);
-    if (filled > 0) _u8g2->drawBox(x+1, y+1, filled-2 > 0 ? filled-2 : 0, h-2 > 0 ? h-2 : 0);
-  } else {
-    if (filled > 0) _u8g2->drawBox(x, y, filled, h);
-  }
+void OLEDDisplaySH1106::_drawLog() {
+    _u8g2.clearBuffer();
+    _u8g2.setFont(u8g2_font_6x10_tf);
+    _u8g2.setFontPosTop();
+
+    // Bestimme, welche Zeilen gezeichnet werden sollen
+    int startLine = max(0, _logLineCount - (int)LOG_VISIBLE_LINES);
+    
+    for (int i = 0; i < LOG_VISIBLE_LINES; i++) {
+        if (startLine + i < _logLineCount) {
+            _u8g2.drawStr(0, i * 10, _logLines[startLine + i].c_str());
+        }
+    }
+    _u8g2.sendBuffer();
 }
 
-void OLEDDisplaySH1106::drawBitmap(int x, int y, int w, int h, const uint8_t* bitmap) {
-  if (!_u8g2 || !bitmap) return;
-  _u8g2->drawXBMP(x, y, w, h, bitmap);
+// --- Dashboard-Modus ---
+
+void OLEDDisplaySH1106::setDashboardText(Quadrant q, const String &text) {
+    _dashboardText[q] = text;
 }
 
-void OLEDDisplaySH1106::setInverted(bool inverted) {
-  _inverted = inverted;
-  if (!_u8g2) return;
-  // U8g2 bietet sendBuffer + setDrawColor. True hardware inversion may require command:
-  // Many OLED controllers support display invert via command; U8g2 has setDrawColor only.
-  // Common approach: clear and redraw with inverted draw color or use setContrast if supported.
-  _u8g2->clearBuffer();
-  _u8g2->setDrawColor(inverted ? 0 : 1);
-  _u8g2->sendBuffer();
+void OLEDDisplaySH1106::setDashboardIcon(Quadrant q, uint8_t width, uint8_t height, const uint8_t *icon) {
+    _dashboardIcon[q] = icon;
+    _dashboardIconWidth[q] = width;
+    _dashboardIconHeight[q] = height;
 }
 
-void OLEDDisplaySH1106::setContrast(uint8_t contrast) {
-  if (!_u8g2) return;
-  // U8g2 exposes setContrast only via u8x8 or lower-level; try u8g2.setContrast
-  // If unsupported on some controllers this is a no-op.
-#ifdef U8X8_WITH_SET_CONTRAST
-  _u8g2->setContrast(contrast);
-#else
-  // Fallback: no-op
-  (void)contrast;
-#endif
+void OLEDDisplaySH1106::showDashboard() {
+    _currentMode = DASHBOARD;
+    _drawDashboard();
 }
 
-bool OLEDDisplaySH1106::setRotation(uint16_t degrees) {
-  if (!_u8g2) return false;
-  const u8g2_cb_t* rot;
-  switch (degrees) {
-    case 0:   rot = U8G2_R0; break;
-    case 90:  rot = U8G2_R1; break;
-    case 180: rot = U8G2_R2; break;
-    case 270: rot = U8G2_R3; break;
-    default:  return false;
-  }
-  _u8g2->setDisplayRotation(rot);
-  return true;
+void OLEDDisplaySH1106::_drawDashboard() {
+    _u8g2.clearBuffer();
+    
+    // Trennlinien zeichnen
+    _u8g2.drawLine(64, 0, 64, 63); // Vertikal
+    _u8g2.drawLine(0, 32, 127, 32); // Horizontal
+
+    // Quadranten zeichnen
+    int quadrantWidth = 64;
+    int quadrantHeight = 32;
+
+    for (int q = 0; q < 4; q++) {
+        int x_offset = (q % 2) * quadrantWidth;
+        int y_offset = (q / 2) * quadrantHeight;
+
+        _u8g2.setFont(u8g2_font_7x13_tf);
+        _u8g2.setFontPosTop();
+
+        // Icon zeichnen, falls vorhanden
+        if (_dashboardIcon[q] != nullptr) {
+            _u8g2.drawXBMP(x_offset + 2, y_offset + 2, _dashboardIconWidth[q], _dashboardIconHeight[q], _dashboardIcon[q]);
+        }
+        
+        // Text zeichnen
+        _u8g2.drawStr(x_offset + 2, y_offset + 18, _dashboardText[q].c_str());
+    }
+    
+    _u8g2.sendBuffer();
 }
 
-U8G2* OLEDDisplaySH1106::u8g2() {
-  return _u8g2;
+// --- Alert-Modus ---
+
+void OLEDDisplaySH1106::showFullscreenAlert(const String &message, bool blink) {
+    _currentMode = ALERT;
+    _alertMessage = message;
+    _isBlinking = blink;
+    _alertVisible = true; // Immer sichtbar beim ersten Aufruf
+    _lastBlinkTime = millis();
+    _drawFullscreenAlert();
 }
 
-void OLEDDisplaySH1106::end() {
-  // kein Eigentum an _u8g2 => keine Löschung. Nur Reset intern.
-  _u8g2 = nullptr;
-  _inverted = false;
+void OLEDDisplaySH1106::_drawFullscreenAlert() {
+    _u8g2.clearBuffer();
+    
+    if (_alertVisible) {
+        _u8g2.setFont(u8g2_font_ncenB12_tr);
+        _u8g2.setFontPosCenter(); // Text horizontal und vertikal zentrieren
+        
+        // Text in der Mitte des Bildschirms ausrichten
+        int textWidth = _u8g2.getStrWidth(_alertMessage.c_str());
+        _u8g2.drawStr((128 - textWidth) / 2, 32, _alertMessage.c_str());
+    }
+
+    _u8g2.sendBuffer();
 }

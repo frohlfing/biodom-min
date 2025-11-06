@@ -1,140 +1,132 @@
-/**
- * @file OLEDDisplaySH1106.h
- * OLEDDisplaySH1106 - schlanker Wrapper um U8g2 (olikraus)
- *
- * Ziel: Einfaches, gut dokumentiertes API für ESP32-Projekte, das typische
- * Display-Workflows (Text, Icons, Progress, Bitmap, invert) kapselt und
- * gleichzeitig Zugriff auf die rohe U8g2-Instanz erlaubt.
- *
- * Backend: U8g2 (https://github.com/olikraus/u8g2)
- *
- * Usage:
- * - Wähle passenden Konstruktor (SPI/I2C/Hardware) je nach Modul.
- * - rufe begin() in setup() auf.
- * - nutze print/printf/drawBitmap/streaming für Bilder.
- *
- * Lizenz: MIT
- */
-
 #pragma once
 
 #include <Arduino.h>
 #include <U8g2lib.h>
 
 /**
- * OLEDDisplaySH1106
- *
- * Wrapperklasse um U8g2. Die Klasse verwaltet die U8g2-Instanz intern und
- * bietet kleine Hilfsfunktionen für häufige UI‑Elemente.
+ * Klasse für den 1.3 Zoll OLED Display SH1106.
+ * 
+ * Diese Klasse stellt eine High-Level-API zur Verfügung, um spezifische
+ * UI-Muster auf dem Display darzustellen, wie z.B. einen scrollenden Log,
+ * ein 4-Quadranten-Dashboard oder bildschirmfüllende Warnmeldungen.
  */
-class OLEDDisplaySH1106 {
+class OLEDDisplaySH1106
+{
 public:
-  /**
-   * Konstruktor für SPI-Module (beispielhaft für SH1106/SSD1306 SPI).
-   *
-   * @param u8g2 Pointer auf eine fertig konstruierte U8G2-Instanz (empfohlen).
-   *              Die Klasse übernimmt keinen Besitz; Instanz muss outlive this.
-   * @note Du kannst auch direkt eine U8G2-Instanz im Sketch erzeugen und hier übergeben.
-   */
-  explicit OLEDDisplaySH1106(U8G2 *u8g2);
+    /**
+     * @enum Quadrant
+     * @brief Definiert die vier Quadranten des Dashboard-Modus.
+     */
+    enum Quadrant { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT };
 
-  /**
-   * Initialisiert das Display (u8g2->begin()) und setzt Standardwerte.
-   * Muss in setup() aufgerufen werden.
-   *
-   * @return true wenn erfolgreich initialisiert wurde, false andernfalls.
-   */
-  bool begin();
+    /**
+     * @brief Konstruktor.
+     * @param resetPin Optionaler GPIO-Pin für den Reset des Displays.
+     */
+    OLEDDisplaySH1106(const uint8_t resetPin = U8X8_PIN_NONE);
 
-  /**
-   * Löscht den Bildschirm-Buffer (u8g2.clearBuffer()).
-   */
-  void clear();
+    /**
+     * @brief Initialisiert das Display.
+     * Muss im setup() des Hauptprogramms aufgerufen werden.
+     */
+    void begin();
 
-  /**
-   * Zeichnet den internen Buffer auf das Display (u8g2.sendBuffer()).
-   */
-  void display();
+    /**
+     * @brief Muss regelmäßig in der Hauptschleife (loop()) aufgerufen werden.
+     * Steuert zeitbasierte Animationen wie z.B. das Blinken von Warnmeldungen.
+     */
+    void update();
+    
+    /**
+     * @brief Löscht den gesamten Bildschirminhalt.
+     */
+    void clear();
 
-  /**
-   * Schreibt einfachen Text an Position (x,y) mit gewählter Font-Größe.
-   *
-   * @param x X-Pixel-Position (links = 0)
-   * @param y Y-Pixel-Position (Baseline für u8g2.drawStr)
-   * @param text Null-terminierter C-String
-   */
-  void drawText(int x, int y, const char* text);
+    // --- Modus 1: Scrolling Log ---
 
-  /**
-   * Zeichnet Text mit printf-ähnlichem Format an Position (x,y).
-   *
-   * @param x X-Pixel-Position
-   * @param y Y-Pixel-Position
-   * @param fmt printf-format string
-   * @param ... format args
-   */
-  void drawTextf(int x, int y, const char* fmt, ...);
+    /**
+     * @brief Fügt eine neue Zeile zum Log hinzu.
+     * Wenn der Bildschirm voll ist, scrollt der vorhandene Text nach oben.
+     * @param text Die hinzuzufügende Textzeile.
+     */
+    void addLogLine(const String &text);
+    
+    /**
+     * @brief Löscht den Inhalt des Log-Modus.
+     */
+    void clearLog();
 
-  /**
-   * Zeichnet eine horizontale Fortschrittsanzeige.
-   *
-   * @param x linke X-Position
-   * @param y Top-Y-Position
-   * @param w Breite (Pixel)
-   * @param h Höhe (Pixel)
-   * @param value 0..maxValue
-   * @param maxValue Maximaler Wert
-   * @param border true => Rahmen zeichnen
-   */
-  void drawProgress(int x, int y, int w, int h, uint32_t value, uint32_t maxValue, bool border = true);
+    // --- Modus 2: Dashboard ---
 
-  /**
-   * Zeichnet ein 1-bit Bitmap (B/W).
-   *
-   * @param x linke X-Position
-   * @param y Top-Y-Position
-   * @param w Breite in Pixel
-   * @param h Höhe in Pixel
-   * @param bitmap Pointer auf uint8_t-Array im U8g2-Format (MSB-first)
-   */
-  void drawBitmap(int x, int y, int w, int h, const uint8_t* bitmap);
+    /**
+     * @brief Setzt den Text für einen bestimmten Quadranten im Dashboard.
+     * @param q Der Quadrant, der aktualisiert werden soll.
+     * @param text Der anzuzeigende Text (z.B. "23.5°C").
+     */
+    void setDashboardText(Quadrant q, const String &text);
 
-  /**
-   * Invertiert Anzeige (weiß auf schwarz vs schwarz auf weiß).
-   * @param inverted true => invertiert, false => normal
-   */
-  void setInverted(bool inverted);
+    /**
+     * @brief Setzt ein Icon für einen bestimmten Quadranten.
+     * @param q Der Quadrant, der das Icon erhalten soll.
+     * @param width Breite des Icons in Pixel.
+     * @param height Höhe des Icons in Pixel.
+     * @param icon Ein Pointer auf das Byte-Array des Icons (XBM-Format).
+     */
+    void setDashboardIcon(Quadrant q, uint8_t width, uint8_t height, const uint8_t *icon);
 
-  /**
-   * Setzt Helligkeit / Kontrast (sofern der Treiber es unterstützt).
-   *
-   * @param contrast 0..255 (Werte außerhalb werden je nach Treiber geclamped)
-   */
-  void setContrast(uint8_t contrast);
+    /**
+     * @brief Zeichnet das Dashboard mit den aktuell gesetzten Werten.
+     */
+    void showDashboard();
 
-  /**
-   * Dreht das Display (0, 90, 180, 270). Führt u8g2.setDisplayRotation aus.
-   *
-   * @param degrees Rotation in Grad (nur 0, 90, 180, 270 unterstützt)
-   * @return true bei akzeptiertem Wert, false bei ungültigem Wert
-   */
-  bool setRotation(uint16_t degrees);
+    // --- Modus 3: Fullscreen Alert ---
+    
+    /**
+     * @brief Zeigt eine bildschirmfüllende Nachricht an.
+     * @param message Die anzuzeigende Warnung.
+     * @param blink Aktiviert das Blinken des Textes (erfordert regelmäßige `update()`-Aufrufe).
+     */
+    void showFullscreenAlert(const String &message, bool blink = false);
 
-  /**
-   * Liefert rohen Zeiger auf die U8g2-Instanz, falls du Spezialbefehle brauchst.
-   * Du darfst direkt u8g2 Methoden aufrufen (z. B. setFont, drawBox etc.).
-   *
-   * @return U8G2*-Pointer (kann nullptr sein, falls nicht initialisiert)
-   */
-  U8G2* u8g2();
-
-  /**
-   * Deinitialisiert die intern verwendeten Ressourcen (z. B. Buffer).
-   * Optional: ruft u8g2->~U8G2 nicht; Instanz bleibt dem Aufrufer.
-   */
-  void end();
 
 private:
-  U8G2* _u8g2;
-  bool _inverted;
+    U8G2_SH1106_128X64_NONAME_F_HW_I2C _u8g2; // Die Instanz der U8g2-Grafikbibliothek, die das Display steuert.
+
+    // --- Zustandsvariablen für den Log-Modus ---
+    static const uint8_t LOG_MAX_LINES = 12;    // Die maximale Anzahl von Zeilen, die der interne Log-Puffer speichern kann.
+    static const uint8_t LOG_VISIBLE_LINES = 6; // Die Anzahl der Log-Zeilen, die gleichzeitig auf dem Display sichtbar sind.
+    String _logLines[LOG_MAX_LINES];            // Der Puffer, der die Textzeilen des Logs speichert.
+    int _logLineCount = 0;                      // Der Puffer, der die Textzeilen des Logs speichert.
+    int _logScrollOffset = 0;                   // Die aktuelle Anzahl der im Puffer gespeicherten Log-Zeilen.
+    
+    /**
+     * @brief Interne Funktion zum Zeichnen des Log-Inhalts in den Display-Puffer.
+     */
+    void _drawLog();
+
+    // --- Zustandsvariablen für das Dashboard ---
+    String _dashboardText[4];         // Ein Array, das die Texte für die vier Quadranten speichert.
+    const uint8_t* _dashboardIcon[4] = {nullptr, nullptr, nullptr, nullptr}; // Ein Array, das die Pointer auf die Icon-Bitmaps der vier Quadranten speichert.
+    uint8_t _dashboardIconWidth[4];   // Speichert die Breite der Icons für die korrekte Positionierung.
+    uint8_t _dashboardIconHeight[4];  // Speichert die Höhe der Icons für die korrekte Positionierung.
+    
+    /**
+     * @brief Interne Funktion zum Zeichnen des Dashboards in den Display-Puffer.
+     */
+    void _drawDashboard();
+
+    // --- Zustandsvariablen für den Alert-Modus ---
+    String _alertMessage;             // Speichert die anzuzeigende Warnmeldung.
+    bool _isBlinking = false;         // Flag, das steuert, ob die Warnmeldung blinken soll.
+    bool _alertVisible = true;        // Internes Flag für den Blink-Effekt (an/aus).
+    unsigned long _lastBlinkTime = 0; // Zeitstempel des letzten Blink-Zustandswechsels.
+    
+    /**
+     * @brief Interne Funktion zum Zeichnen der Warnmeldung in den Display-Puffer.
+     */
+    void _drawFullscreenAlert();
+
+    // Aktiver Anzeigemodus
+    enum DisplayMode { NONE, LOG, DASHBOARD, ALERT }; // Definiert den aktuellen Darstellungsmodus des Displays.
+    DisplayMode _currentMode = NONE;                  // Speichert den aktuell aktiven Anzeigemodus.
 };

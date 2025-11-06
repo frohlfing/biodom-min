@@ -1,60 +1,86 @@
 /**
- * @file example.cpp
- * Beispiel für OLEDDisplaySH1106 mit U8g2 (ESP32)
- *
- * Dieses Beispiel verwendet ein häufiges Setup:
- *  - SSD1306 128x64 via I2C (Change to your constructor if using SPI)
- *
- * Hinweis: Erzeuge eine U8G2-Instanz im Sketch und übergebe sie an den Wrapper.
+ * Beispiel zur Nutzung der OLEDDisplaySH1106-Bibliothek.
+ * 
+ * Das Beispiel initialisiert ein SH1106 I2C OLED Display und schaltet
+ * alle 10 Sekunden zwischen den drei Haupt-Anzeigemodi um:
+ * 1. Scrolling Log: Zeigt nacheinander Log-Meldungen an, die nach oben scrollen.
+ * 2. Dashboard: Zeigt eine 4-Quadranten-Ansicht mit simulierten Messwerten.
+ * 3. Fullscreen Alert: Zeigt eine blinkende Warnmeldung.
+ * 
+ * @note Die `display.update()`-Methode muss in der Hauptschleife aufgerufen
+ *       werden, damit zeitbasierte Effekte wie das Blinken funktionieren.
  */
 
 #include <Arduino.h>
-#include <U8g2lib.h>
 #include "OLEDDisplaySH1106.h"
 
-// Beispiel für SSD1306 I2C 128x64 (TwoWire default Wire)
-U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
-OLEDDisplaySH1106 display(&u8g2);
+// Erstelle eine Instanz der Bibliotheksklasse (Standard I2C-Pins)
+OLEDDisplaySH1106 display;
 
 void setup() {
-  Serial.begin(115200);
-  delay(50);
-  Serial.println("OLEDDisplaySH1106 Beispiel");
+    Serial.begin(115200);
+    Serial.println("Starte OLED-Display-Beispiel...");
 
-  if (!display.begin()) {
-    Serial.println("Display init fehlgeschlagen");
-    while (1) delay(1000);
-  }
-  // einfache Anzeige
-  display.clear();
-  display.drawText(0, 12, "Hello U8g2");
-  display.display();
-
-  delay(1000);
-
-  // Fortschrittsbalken-Demo
-  for (int v = 0; v <= 100; v += 10) {
+    display.begin();
     display.clear();
-    display.drawTextf(0, 12, "Progress %d%%", v);
-    display.drawProgress(0, 20, 120, 10, v, 100);
-    display.display();
-    delay(300);
-  }
-
-  // Beispiel: Zeichne Bitmap (Platzhalter; ersetze durch echtes Bitmap)
-  const uint8_t icon[] = {
-    0xFF,0x81,0x81,0xFF // sehr kleines Beispiel (8x4)
-  };
-  display.clear();
-  display.drawBitmap(0, 32, 8, 4, icon);
-  display.display();
 }
 
 void loop() {
-  // Periodisch Status anzeigen
-  display.clear();
-  display.drawText(0, 12, "Biodom Mini");
-  display.drawTextf(0, 26, "Heap: %u", ESP.getFreeHeap());
-  display.display();
-  delay(2000);
+    static int displayMode = 0;
+    static unsigned long lastModeChange = 0;
+
+    // Diese Funktion muss immer aufgerufen werden, um z.B. das Blinken zu ermöglichen.
+    display.update();
+
+    // Alle 10 Sekunden den Anzeigemodus wechseln
+    if (millis() - lastModeChange > 10000) {
+        lastModeChange = millis();
+        displayMode = (displayMode + 1) % 3; // Schaltet zwischen 0, 1, 2 um
+
+        Serial.printf("Wechsle zu Anzeigemodus %d\n", displayMode);
+
+        switch (displayMode) {
+            case 0: // Log-Modus initialisieren
+                display.clearLog();
+                display.addLogLine("System Start...");
+                delay(500);
+                display.addLogLine("Sensor A... OK");
+                delay(500);
+                display.addLogLine("Sensor B... OK");
+                delay(500);
+                display.addLogLine("WLAN verbinde...");
+                delay(500);
+                display.addLogLine("Verbunden!");
+                delay(500);
+                display.addLogLine("IP: 192.168.1.42");
+                delay(500);
+                display.addLogLine("Zeige Log für 10s");
+                break;
+
+            case 1: // Dashboard-Modus initialisieren
+                display.setDashboardText(OLEDDisplaySH1106::TOP_LEFT, "Temp: 23.5 C");
+                display.setDashboardText(OLEDDisplaySH1106::TOP_RIGHT, "Hum: 45.2 %");
+                display.setDashboardText(OLEDDisplaySH1106::BOTTOM_LEFT, "CO2: 415 ppm");
+                display.setDashboardText(OLEDDisplaySH1106::BOTTOM_RIGHT, "Druck: 1012 hPa");
+                display.showDashboard();
+                break;
+
+            case 2: // Alert-Modus initialisieren
+                display.showFullscreenAlert("ALARM!", true);
+                break;
+        }
+    }
+
+    // Im Dashboard-Modus könnten hier Werte aktualisiert werden
+    if (displayMode == 1) {
+        // Simuliere einen sich ändernden Temperaturwert
+        static float temp = 23.5;
+        temp += 0.1;
+        if (temp > 25.0) temp = 23.5;
+        
+        display.setDashboardText(OLEDDisplaySH1106::TOP_LEFT, "Temp: " + String(temp, 1) + " C");
+        display.showDashboard(); // Erneut zeichnen, um die Änderung anzuzeigen
+    }
+    
+    delay(500); // Verlangsamt die Aktualisierung im Dashboard-Modus
 }

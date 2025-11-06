@@ -1,3 +1,7 @@
+/**
+ * Unit-Test für die SensorAM2302-Bibliothek
+ */
+
 #include <Arduino.h>
 #include <unity.h>
 #include "SensorAM2302.h"

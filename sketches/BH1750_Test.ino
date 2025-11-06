@@ -1,6 +1,6 @@
-/*
-BH1750 Test
-*/
+/**
+ * Funktionstest für den Lichtsensor GY-302 (BH1750)
+ */
 
 #include <BH1750.h>
 #include <Wire.h>

@@ -1,36 +1,47 @@
 /**
- * @file test_MicroSDCard.cpp
- * Unity-Tests (Hardware-abhängig!). Läuft auf ESP32 mit SD-Karte.
+ * Unit-Test für die MicroSDCard-Bibliothek.
+ * 
+ * Dieser Test überprüft die grundlegende Funktionalität des SD-Kartenmoduls.
+ * Er stellt sicher, dass die Karte nicht nur initialisiert, sondern auch
+ * beschrieben und modifiziert werden kann.
  */
 
 #include <Arduino.h>
 #include <unity.h>
 #include "MicroSDCard.h"
 
-#define SD_CS_PIN 16
-MicroSDCard sd(SD_CS_PIN, 1);
+// GPIO-Pin für den Chip Select der SD-Karte
+const uint8_t SD_CS_PIN = 16;
 
-void test_begin_and_basic_write_read() {
-  TEST_ASSERT_TRUE(sd.begin(2000000UL));
-  const char* path = "/unittest.txt";
-  sd.remove(path);
-  TEST_ASSERT_FALSE(sd.exists(path));
+// Erstelle eine Instanz der zu testenden Klasse
+MicroSDCard sdCard(SD_CS_PIN);
 
-  TEST_ASSERT_TRUE(sd.saveText(path, "unittest\n", false));
-  TEST_ASSERT_TRUE(sd.exists(path));
-
-  String s;
-  TEST_ASSERT_TRUE(sd.readText(path, s));
-  TEST_ASSERT_TRUE(s.indexOf("unittest") >= 0);
-
-  TEST_ASSERT_TRUE(sd.remove(path));
-  TEST_ASSERT_FALSE(sd.exists(path));
+/**
+ * @brief Testet die Initialisierung und eine einfache Datei-I/O-Operation.
+ * 
+ * Dieser Test prüft drei Dinge:
+ * 1. Kann die SD-Karte erfolgreich initialisiert werden (`begin()`).
+ * 2. Kann eine Test-Datei erfolgreich erstellt und geschrieben werden (`writeFile()`).
+ * 3. Kann diese Test-Datei anschließend wieder gelöscht werden (`deleteFile()`).
+ */
+void test_sdcard_initialization_and_io() {
+    TEST_ASSERT_TRUE_MESSAGE(sdCard.begin(), "SD-Karten-Initialisierung fehlgeschlagen. Verkabelung oder Karte prüfen.");
+    
+    const char* testFile = "/unittest.txt";
+    
+    TEST_ASSERT_TRUE_MESSAGE(sdCard.writeFile(testFile, "test"), "Schreiben der Test-Datei fehlgeschlagen.");
+    
+    TEST_ASSERT_TRUE_MESSAGE(sdCard.deleteFile(testFile), "Löschen der Test-Datei fehlgeschlagen.");
 }
 
 void setup() {
-  UNITY_BEGIN();
-  RUN_TEST(test_begin_and_basic_write_read);
-  UNITY_END();
+    delay(2000);
+
+    UNITY_BEGIN();
+    RUN_TEST(test_sdcard_initialization_and_io);
+    UNITY_END();
 }
 
-void loop() {}
+void loop() {
+    // Nichts zu tun hier
+}

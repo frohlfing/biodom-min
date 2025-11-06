@@ -2,9 +2,8 @@
 #include <Arduino.h>
 
 /**
- * SensorLDR5528
- *
- * Einfacher Treiber für einen Fotowiderstand (LDR5528) im Spannungsteiler.
+ * Klasse für den Fotowiderstand LDR5528
+ * 
  * Liefert Roh-ADC-Wert und eine approximate "Lux"-Schätzung (relativ).
  *
  * Annahmen:

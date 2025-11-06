@@ -1,3 +1,7 @@
+/**
+ * Unit-Test für die SensorBH1750-Bibliothek
+ */
+
 #include <Arduino.h>
 #include <Wire.h>
 #include <unity.h>

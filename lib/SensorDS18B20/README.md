@@ -1,6 +1,6 @@
 # SensorDS18B20-Bibliothek
 
-Diese Bibliothek kapselt die Nutzung des digitalen Bodentemperatursensors DS18B20.
+Diese Bibliothek kapselt die Nutzung des Bodentemperatursensors DS18B20.
 
 ## 📦 Installation
 

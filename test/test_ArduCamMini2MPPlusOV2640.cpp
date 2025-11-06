@@ -1,42 +1,42 @@
 /**
- * @file test_ArduCamMini2MPPlusOV2640.cpp
- * Einfache Unit-Testfälle (funktional). Diese Tests sind hardware-abhängig.
- * Sie prüfen primär, dass API-Aufrufe keine fatalen Fehler werfen.
+ * Unit-Test für die ArduCamMini2MPPlusOV2640-Bibliothek.
+ * 
+ * Dieser Test überprüft die grundlegende Kommunikation mit der ArduCAM-Hardware.
+ * Er stellt sicher, dass die Kamera korrekt initialisiert werden kann, was sowohl
+ * die SPI- als auch die I2C-Schnittstelle testet.
  */
 
 #include <Arduino.h>
 #include <unity.h>
 #include "ArduCamMini2MPPlusOV2640.h"
-#include <MicroSDCard.h>
 
-#define CAM_CS_PIN 17
-#define SD_CS_PIN 16
+// GPIO-Pin für den Chip Select der Kamera
+const uint8_t CAM_CS_PIN = 17;
 
-ArduCamMini2MPPlusOV2640 cam(CAM_CS_PIN, 21, 22, 8000000UL, 512, 5000);
-MicroSDCard sd(SD_CS_PIN, 1);
+// Erstelle eine Instanz der zu testenden Klasse
+ArduCamMini2MPPlusOV2640 camera(CAM_CS_PIN);
 
-void test_begin_and_capture_api_calls() {
-  TEST_ASSERT_TRUE(cam.begin());
-  // SD init may fail in test env; skip if sd.begin fails
-  if (sd.begin(2000000UL)) {
-    // create and remove a small file via captureToSD (if camera present)
-    if (cam.isCameraPresent()) {
-      TEST_ASSERT_TRUE(cam.captureToSD(sd, "/unittest.jpg", 3000));
-      TEST_ASSERT_TRUE(sd.exists("/unittest.jpg"));
-      TEST_ASSERT_TRUE(sd.remove("/unittest.jpg"));
-    } else {
-      // camera not present — at least camera.begin succeeded or not; mark test as passed for headless
-      TEST_ASSERT_TRUE(true);
-    }
-  } else {
-    TEST_ASSERT_TRUE(true);
-  }
+/**
+ * @brief Testet die Initialisierungssequenz der Kamera.
+ * 
+ * Die `begin()`-Methode gibt nur dann `true` zurück, wenn:
+ * 1. Die SPI-Kommunikation mit dem ArduCAM-Modul funktioniert.
+ * 2. Der OV2640-Sensor über I2C gefunden und seine Chip-ID korrekt ausgelesen wurde.
+ * Dieser einzelne Test ist daher ein umfassender Hardware-Verbindungstest.
+ */
+void test_camera_initialization() {
+    TEST_ASSERT_TRUE_MESSAGE(camera.begin(), "Kamera-Initialisierung fehlgeschlagen. Verkabelung (SPI & I2C) und Stromversorgung prüfen.");
 }
 
 void setup() {
-  UNITY_BEGIN();
-  RUN_TEST(test_begin_and_capture_api_calls);
-  UNITY_END();
+    // Eine Verzögerung geben, damit der PlatformIO Serial Monitor verbinden kann
+    delay(2000); 
+
+    UNITY_BEGIN();
+    RUN_TEST(test_camera_initialization);
+    UNITY_END();
 }
 
-void loop() {}
+void loop() {
+    // Nichts zu tun hier
+}

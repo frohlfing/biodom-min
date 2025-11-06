@@ -1,10 +1,10 @@
 #pragma once
+
 #include <Arduino.h>
 
 /**
- * LED
- *
- * Einfacher Treiber für eine einzelne LED (oder Optokoppler-Eingang, Status-LED, ...)
+ * Klasse für eine einzelne LED
+ * 
  * Unterstützt aktive High/Low Logik, nicht-blockierendes Blinken und Toggle.
  */
 class LED {

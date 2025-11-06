@@ -1,16 +1,11 @@
-/**
- * @file SensorXKCY25NPN.h
- * @brief Lokale Kapselung für den berührungslosen Füllstandssensor XKC-Y25-NPN (NPN, digital).
- */
-
 #pragma once
+
 #include <Arduino.h>
 
 /**
- * @brief Klasse für den berührungslosen Füllstandssensor XKC-Y25-NPN.
+ * Klasse für den berührungslosen Füllstandssensor XKC-Y25-NPN.
  *
- * Der Sensor liefert einen digitalen NPN-Ausgang (LOW bei Wassererkennung).
- * Üblicherweise wird am Ausgang ein Pull‑Up auf +3.3V benötigt (10 kΩ).
+ * Der Sensor liefert LOW bei Wassererkennung.
  */
 class SensorXKCY25NPN {
 public:

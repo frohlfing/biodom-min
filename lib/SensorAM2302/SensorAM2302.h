@@ -1,18 +1,14 @@
-/**
- * @file SensorAM2302.h
- * @brief Lokale Kapselung für den Luftfeuchte- und Temperatursensor AM2302 (DHT22).
- */
-
 #pragma once
+
 #include <Arduino.h>
 #include <SimpleDHT.h>
 
 /**
- * @brief Klasse für den Luftsensor AM2302 (DHT22).
+ * Klasse für den Raumtemperatur- und Luftfeuchtigkeitssensor AM2302 (DHT22).
  */
 class SensorAM2302 {
 public:
-    /**a
+    /**
      * @brief Konstruktor mit Angabe des GPIO-Pins.
      * @param pin GPIO-Pin, an dem der Sensor angeschlossen ist.
      */

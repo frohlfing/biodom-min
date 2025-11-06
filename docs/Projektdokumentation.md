@@ -265,7 +265,7 @@ GPIO32 ──┤ IN7       Com5 ├── +12V        GND ─O──(schwarz)─
 
 ### S1: Kamera
 
-ArduCAM Mini 2MP Plus, OV2640  
+ArduCAM Mini 2MP Plus (mit OV2640-Chip)
 
 ![ArduCAM](https://cdn1.botland.de/81994-pdt_540/arducam-mini-ov2640-2mpx-1600x1200px-60fps-spi-kameramodul-fur-arduino-.jpg)
 ![ArduCAM Anschlüsse](https://cdn1.botland.de/81992-pdt_540/arducam-mini-ov2640-2mpx-1600x1200px-60fps-spi-kameramodul-fur-arduino-.jpg)
@@ -341,9 +341,11 @@ Leider ist die Bibliothek so konzipiert, dass die Datei .\Arduino\libraries\Ardu
 
 ### S2: Luft (Raumtemperatur und Luftfeuchtigkeit)
 
-AM2302-Modul 
+Raumtemperatur- und Luftfeuchtigkeitssensormodul AM2302, auch bekannt als DHT22.
 
-Dies ist ein Temperatur- und Luftfeuchtigkeitssensor wie der DHT22, aber präziser.
+Tatsächlich ist AM2302 ein Nachfolgemodell von DHT22 und präziser. 
+
+Der Sensor ist auch "pur" ohne Modul erhältlich. Dann muss zusätzlich ein Pullup-Widerstand (typischerweise 4.7 kΩ bis 10 kΩ) zwischen der Datenleitung und VCC angeschlossen werden. Ich verwende hier das Modul, das den Pullup-Widerstand bereits beinhaltet.
 
 ![AM2302](https://m.media-amazon.com/images/I/71TPWxnUE8L._SL1500_.jpg)
 
@@ -381,9 +383,9 @@ Dies ist ein Temperatur- und Luftfeuchtigkeitssensor wie der DHT22, aber präzis
 
 ### S3: Bodentemperatur
 
-DS18B20
+Bodentemperatursensor DS18B20
 
-Dies ist ein wasserdichter Temperaturfühler, kommt mit 1m-Kabel und Edelstahlhülse.
+Dieser Sensor ist wasserdicht, kommt mit 1m-Kabel und Edelstahlhülse.
 
 ![DS18B20](https://m.media-amazon.com/images/I/71-+wN7lSdL._SL1500_.jpg)
 
@@ -424,11 +426,9 @@ Wird zwischen dem roten Kabel (VCC) und dem gelben Kabel (DATA) an die Buchsenle
 
 ### S4: Bodenfeuchte
 
-Kapazitives Hygrometer-Modul V1.2, analog
+Kapazitiver Bodenfeuchtigkeitssensor v1.2
 
-Dies ist ein kapazitiver Bodenfeuchtigkeitssensor mit analogem Ausgang.
-
-Auch "Capacitive Soil Moisture Sensor" genannt. 
+Auch bekannt als "Capacitive Soil Moisture Sensor v1.2" oder "Hygrometer Module v1.2".
 
 ![Hygrometer](https://m.media-amazon.com/images/I/61f-Y-vFplL._SX522_.jpg)
 
@@ -440,7 +440,8 @@ Auch "Capacitive Soil Moisture Sensor" genannt.
 [Datasheet](https://cdn.shopify.com/s/files/1/1509/1638/files/Hygrometer_V1.2_Sensor_Modul_Datenblatt_AZ-Delivery_Vertriebs_GmbH.pdf)
 
 * 5V (!)
-* Größe: 22 x 97 x 9 mm  
+* Größe: 22 x 97 x 9 mm 
+* analoger Ausgang 
 
 **Anmerkung:** 
 
@@ -536,9 +537,7 @@ void loop() {
 
 ### S5: Wasserstand
 
-XKC-Y25-NPN 
-
-Dies ist ein berührungsloser Füllstandsensor.
+Berührungsloser Füllstandsensor XKC-Y25-NPN 
 
 ![XKC-Y25-NPN](https://m.media-amazon.com/images/I/61vWOl7DAtL._AC_SL1001_.jpg)
 
@@ -599,9 +598,9 @@ So wird der Pegel auf HIGH (+3.3V) gezogen, wenn Trockenheit erkannt wird.
 
 ### S6: Lichtstärke
 
-GY-302 BH1750 Lichtsensormodul
+Lichtsensor GY-302 (BH1750)
 
-Dieser Sensor ist sehr genau und misst das Licht direkt in LUX.
+Dieses Sensormodul ist sehr genau und misst das Licht direkt in LUX.
 
 ![GY-302 BH1750](https://m.media-amazon.com/images/I/713WSoL6ERL._SX522_.jpg)
 
@@ -648,7 +647,7 @@ Der Analog-/Digitaleingang GPIO36 wird über eine Stiftleiste zugänglich gemach
 
 Als Beispiel könnte ein Fotowiderstand (auch Fotozelle oder LDR (Licht-Dependent Resistor) genannt) angeschlossen werden:
 
-LDR5528
+Fotowiderstand LDR5528
 
 [Amazon](https://www.amazon.de/dp/B089YNCYG4)
 4,49 € (10 Stück), Einzelpreis: 0,49 €
