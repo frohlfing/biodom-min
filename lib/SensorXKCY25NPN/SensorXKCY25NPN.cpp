@@ -1,29 +1,41 @@
 #include "SensorXKCY25NPN.h"
 
 SensorXKCY25NPN::SensorXKCY25NPN(uint8_t pin, bool useInternalPullup)
-    : _pin(pin), _useInternalPullup(useInternalPullup), _lastState(false) {}
+    : _pin(pin), _useInternalPullup(useInternalPullup), _waterDetected(false) {}
 
-void SensorXKCY25NPN::begin() {
+bool SensorXKCY25NPN::begin() {
     if (_useInternalPullup) {
         pinMode(_pin, INPUT_PULLUP);
     } else {
         pinMode(_pin, INPUT);
     }
+
+    // Eine erste Messung durchführen, um einen Startwert zu haben.
+    return read(); 
 }
 
 bool SensorXKCY25NPN::read() {
-    // Sensor: OUT pulled LOW when water is present (NPN sink).
-    // Mit externem Pull-Up zieht OUT bei Trockenheit auf HIGH.
-    int v = digitalRead(_pin);
-    // Wenn OUT == LOW -> Wasser erkannt
-    _lastState = (v == LOW);
-    return _lastState;
+    // Der Sensor-Ausgang ist ein NPN Open-Collector.
+    // Er zieht den Pin auf LOW, wenn Wasser erkannt wird.
+    // Mit einem Pull-Up-Widerstand ist der Pin HIGH, wenn kein Wasser da ist.
+    int pinState = digitalRead(_pin);
+
+    // Wasser wird erkannt, wenn der Pin LOW ist.
+    _waterDetected = (pinState == LOW);
+    
+    return true; // Das Lesen eines digitalen Pins schlägt nicht fehl.
 }
 
 bool SensorXKCY25NPN::isWaterDetected() const {
-    return _lastState;
+    return _waterDetected;
 }
 
-const char* SensorXKCY25NPN::wiringNotes() const {
-    return "VCC: 5-12V; OUT: open-collector NPN -> use 10k pull-up to 3.3V; GND common";
+int SensorXKCY25NPN::getLastError() const {
+    // Dieser Sensor hat keine Fehlererkennung.
+    return 0;
+}
+
+const char* SensorXKCY25NPN::getErrorMessage() const {
+    // Entsprechend gibt es nur die "OK"-Meldung.
+    return "OK";
 }

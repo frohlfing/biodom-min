@@ -16,7 +16,7 @@ public:
 
     /**
      * @brief Initialisiert den Sensor.
-     * Führt eine erste Testlesung durch, um die Verbindung zu prüfen.
+     * Führt eine erste Testmessung durch, um die Verbindung zu prüfen.
      * @return true bei Erfolg, andernfalls false.
      */
     bool begin();
@@ -47,7 +47,7 @@ public:
 
     /**
      * @brief Gibt eine Beschreibung des letzten Fehlers zurück.
-     * @return Fehlerbeschreibung (String).
+     * @return Fehlerbeschreibung (max. 21 Zeichen).
      */
     const char* getErrorMessage() const;
 

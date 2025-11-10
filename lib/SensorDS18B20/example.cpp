@@ -13,15 +13,17 @@ SensorDS18B20 sensor(4); // GPIO4
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("Starte DS18B20-Test...");
+    Serial.println("Initialisiere Sensor...");
+    if (!sensor.begin()) {
+        Serial.print("Initialisierung fehlgeschlagen: ");
+        Serial.println(sensor.getErrorMessage());
+    }
 }
 
 void loop() {
     if (sensor.read()) {
-        Serial.print(">");
-        Serial.print("Temperatur:"); // °C
-        Serial.print(sensor.getTemperature());
-        Serial.println();
+        Serial.print(">Temperatur:"); // °C
+        Serial.println(sensor.getTemperature());
     } else {
         Serial.print("Fehler ");
         Serial.print(sensor.getLastError());

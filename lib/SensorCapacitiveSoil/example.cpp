@@ -10,28 +10,28 @@
 #include <Arduino.h>
 #include "SensorCapacitiveSoil.h"
 
-SensorCapacitiveSoil soil(34); // GPIO34 (Analogpin)
+SensorCapacitiveSoil sensor(34); // GPIO34 (Analogpin)
 
 void setup() {
     Serial.begin(115200);
-    delay(50);
-    Serial.println("Starte SensorCapacitiveSoil-Test...");
-    soil.begin();
+    Serial.println("Initialisiere Sensor...");
+    if (!sensor.begin()) {
+        Serial.print("Initialisierung fehlgeschlagen: ");
+        Serial.println(sensor.getErrorMessage());
+    }
 }
 
 void loop() {
-    if (soil.read()) {
-        Serial.print(">");
-        Serial.print("SoilRaw:");      // Rohwert
-        Serial.print(soil.getRaw());
-
-        Serial.print(",");
-        Serial.print("SoilPercent:");  // Prozent(0-100)
-        Serial.print(soil.getPercent());
-
-        Serial.println();
+    if (sensor.read()) {
+        Serial.print(">SoilRaw:");      // Rohwert
+        Serial.print(sensor.getRaw());
+        Serial.print(",SoilPercent:");  // Prozent(0-100)
+        Serial.println(sensor.getPercent());
     } else {
-        Serial.println("Fehler beim Lesen des Sensors");
+        Serial.print("Fehler ");
+        Serial.print(sensor.getLastError());
+        Serial.print(": ");
+        Serial.println(sensor.getErrorMessage());
     }
     delay(2000);
 }

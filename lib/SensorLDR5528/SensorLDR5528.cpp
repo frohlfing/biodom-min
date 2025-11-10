@@ -1,72 +1,64 @@
 #include "SensorLDR5528.h"
 #include <math.h>
 
-SensorLDR5528::SensorLDR5528(uint8_t analogPin, float pullupOhm, uint16_t adcMax)
-  : _pin(analogPin),
-    _pullupOhm(pullupOhm),
-    _adcMax(adcMax),
-    _raw(0),
-    _resistance(NAN),
-    _lux(NAN) {}
+SensorLDR5528::SensorLDR5528(uint8_t analogPin, float fixedResistorOhm, uint16_t adcMax) 
+  : _pin(analogPin), _fixedResistorOhm(fixedResistorOhm), _adcMax(adcMax), _raw(0), _resistance(NAN), _lux(NAN), _lastError(0) {}
 
 bool SensorLDR5528::begin() {
-  // Für analoge Eingänge ist normalerweise keine weitere Init nötig.
-  // Bei Plattformen, die ADC-Referenz setzen müssen, kann hier ergänzt werden.
-  pinMode(_pin, INPUT);
-  return true;
+    // Für den analogen Sensor besteht die "Initialisierung" aus einem ersten
+    // erfolgreichen Leseversuch, um die Verbindung zu verifizieren.
+    return read();
 }
 
 bool SensorLDR5528::read() {
-  // Lese Rohwert
-  uint32_t sum = 0;
-  const uint8_t samples = 5;
-  for (uint8_t i = 0; i < samples; ++i) {
-    sum += analogRead(_pin);
-    delay(5);
-  }
-  _raw = static_cast<uint16_t>(sum / samples);
+    // --- 1. Oversampling zur Rauschreduzierung ---
+    // Wir nehmen mehrere Messungen und bilden den Durchschnitt, um einen stabileren Wert zu erhalten.
+    uint32_t sum = 0;
+    const uint8_t samples = 5;
+    for (uint8_t i = 0; i < samples; ++i) {
+        sum += analogRead(_pin);
+        delay(5); // Kurze Pause zwischen den Messungen
+    }
+    _raw = static_cast<uint16_t>(sum / samples);
 
-  // Schütze gegen Division durch Null
-  if (_raw >= _adcMax) {
-    // sehr hell oder Kurzschluss zu Vcc; Widerstand gegen 0
-    _resistance = 0.0f;
-    _lux = NAN;
-    return true;
-  }
+    // --- 2. Plausibilitätsprüfung ---
+    // Ein Wert ganz am Anfang oder Ende der Skala ist physikalisch unwahrscheinlich und
+    // deutet auf einen Fehler hin (z.B. Kurzschluss nach GND oder VCC, offener Pin).
+    // Wir lassen eine kleine Toleranz von 1 ADC-Schritt.
+    if (_raw >= (_adcMax - 1) || _raw <= 1) {
+        _resistance = NAN;
+        _lux = NAN;
+        _lastError = 1; // Fehler: Wert unplausibel
+        return false;
+    }
 
-  // Spannung am Messpunkt (Vout)
-  float vout = adcToVoltage(_raw);
-
-  // Vermeide fehlerhafte Werte: wenn vout == 0 => LDR unendlich (offen)
-  if (vout <= 0.0f) {
-    _resistance = INFINITY;
-    _lux = NAN;
-    return true;
-  }
-
-  // Annahme: Spannungsteiler: Vcc -> R_pullup -> Vout -> LDR -> GND
-  // R_LDR = R_pullup * (Vcc / Vout - 1)
-  // Wir nehmen Vcc = 3.3V oder 5V je nach Plattform; implizit via Referenzspannung ADC.
+    // --- 3. Widerstandsberechnung basierend auf dem Spannungsteiler ---
+    // Formel: R_LDR = R_pullup * (Vcc / Vout - 1)
 #if defined(ARDUINO_ARCH_ESP32)
-  const float vcc = 3.3f; // typischer Wert; wenn anders, anpassen
+    const float vcc = 3.3f;
 #else
-  const float vcc = 5.0f;
+    const float vcc = 5.0f;
 #endif
 
-  // Schütze vor unrealistischen Divisionen
-  if (vout >= vcc) {
-    _resistance = 0.0f;
-    _lux = NAN;
+    // Umwandlung des ADC-Rohwerts in die Spannung am Messpunkt (Vout)
+    float vout = (static_cast<float>(_raw) / static_cast<float>(_adcMax)) * vcc;
+    
+    // Formel für Pull-Down-Schaltung: VCC --[LDR]-- Vout --[R_fixed]-- GND
+    // Vout = VCC * R_fixed / (R_LDR + R_fixed)
+    // ==> R_LDR = R_fixed * (VCC / Vout - 1)
+    if (vout <= 0) { // Schutz vor Division durch Null
+      _resistance = INFINITY;
+    } else {
+      _resistance = _fixedResistorOhm * (vcc / vout - 1.0f);
+    }
+
+    // --- 4. Approximative Umrechnung von Widerstand in Lux ---
+    // Diese Formel ist eine empirische Annäherung und dient nur als Schätzwert.
+    _lux = resistanceToLux(_resistance);
+    
+    // --- 5. Erfolgreicher Abschluss ---
+    _lastError = 0; // Fehlercode zurücksetzen
     return true;
-  }
-
-  _resistance = _pullupOhm * (vcc / vout - 1.0f);
-
-  // Approximative Umrechnung von Widerstand auf Lux.
-  // Diese Formel ist empirisch; kalibrieren für exakte Werte.
-  _lux = resistanceToLux(_resistance);
-
-  return true;
 }
 
 uint16_t SensorLDR5528::getRaw() const {
@@ -85,8 +77,8 @@ void SensorLDR5528::setAdcMax(uint16_t adcMax) {
   _adcMax = adcMax;
 }
 
-void SensorLDR5528::setPullupOhm(float pullupOhm) {
-  _pullupOhm = pullupOhm;
+void SensorLDR5528::setFixedResistorOhm(float fixedResistorOhm) {
+  _fixedResistorOhm = fixedResistorOhm;
 }
 
 float SensorLDR5528::adcToVoltage(uint16_t adc) const {
@@ -114,4 +106,16 @@ float SensorLDR5528::resistanceToLux(float r) const {
   if (ratio <= 0.0f) return NAN;
   float lux = pow(ratio, 1.0f / b);
   return lux;
+}
+
+int SensorLDR5528::getLastError() const {
+    return _lastError;
+}
+
+const char* SensorLDR5528::getErrorMessage() const {
+    switch(_lastError) {
+        case 0: return "OK";
+        case 1: return "Wert unplausibel";
+        default: return "Unbekannter Fehler";
+    }
 }

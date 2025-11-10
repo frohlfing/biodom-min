@@ -471,8 +471,8 @@ void loop() {
 ``` 
  
 Die Messung ergibt 
-* im Wasser: 995 bis 1055 => ca. unter 1100
-* in der Luft: 2642 bis 2734  => ca. über 2500
+* im Wasser: 995 bis 1055 => unter 1100
+* in der Luft: 2642 bis 2734  => über 2500
 
 Der folgende Code verwendet die Rohwerte und ordnet sie einem Bereich von 0 bis 100% zu:
 
@@ -554,9 +554,9 @@ So wird der Pegel auf HIGH (+3.3V) gezogen, wenn Trockenheit erkannt wird.
 
 ### S5: Lichtstärke
 
-Lichtsensor GY-302 BH1750
+Lichtsensormodul GY-302 BH1750
 
-Dieses Sensormodul ist sehr genau und misst das Licht direkt in LUX.
+Dieser Sensor ist sehr genau und misst das Licht direkt in LUX.
 
 ![GY-302 BH1750](https://m.media-amazon.com/images/I/713WSoL6ERL._SX522_.jpg)
 

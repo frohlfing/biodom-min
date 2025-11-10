@@ -5,21 +5,26 @@
 #include <Arduino.h>
 #include "SensorXKCY25NPN.h"
 
-SensorXKCY25NPN levelSensor(35, false); // GPIO35 (nur als Eingangs-Pin geeignet)
+SensorXKCY25NPN sensor(35, false); // GPIO35 (nur als Eingangs-Pin geeignet)
 
 void setup() {
     Serial.begin(115200);
-    delay(50);
-    Serial.println("Starte XKC-Y25-NPN Test...");
-    levelSensor.begin();
-    Serial.println(levelSensor.wiringNotes());
+    Serial.println("Initialisiere Sensor...");
+    if (!sensor.begin()) {
+        Serial.print("Initialisierung fehlgeschlagen: ");
+        Serial.println(sensor.getErrorMessage());
+    }
 }
 
 void loop() {
-    if (levelSensor.read()) {
-        Serial.println(">WaterDetected:1"); // Serial Plotter / Parser kompatibel
+    if (sensor.read()) {
+        Serial.print(">WaterDetected:"); // °C
+        Serial.println(sensor.isWaterDetected() ? "1" : "0");
     } else {
-        Serial.println(">WaterDetected:0");
+        Serial.print("Fehler ");
+        Serial.print(sensor.getLastError());
+        Serial.print(": ");
+        Serial.println(sensor.getErrorMessage());
     }
-    delay(1000);
+    delay(2000);
 }

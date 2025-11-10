@@ -6,28 +6,31 @@
  * 
  * Liefert Roh-ADC-Wert und eine approximate "Lux"-Schätzung (relativ).
  *
- * Annahmen:
- * - Der LDR ist Teil eines Spannungsteilers: Vcc -- R_pullup -- AIN -- LDR -- GND
- * - pullupOhm ist der feste Widerstand in Ohm.
- *
- * Hinweise:
- * - Für exakte Lux-Werte ist eine Kalibrierung gegen ein lux-messgerät nötig.
+ * Annahmen zur Schaltung (Pull-Down-Konfiguration):
+ * - Der LDR ist Teil eines Spannungsteilers: VCC -- [LDR] -- AIN -- [R_fixed] -- GND
+ * - R_fixed ist der feste Widerstand in Ohm.
  */
 class SensorLDR5528 {
 public:
   /**
    * Konstruktor.
-   * @param analogPin Arduino-ADC-Pin (z. B. A0 oder GPIO-Pin mit ADC auf ESP32)
-   * @param pullupOhm Werte des Pullup-Widerstands in Ohm (Standard 10kΩ)
-   * @param adcMax Maximaler ADC-Wert (z. B. 1023 für 10-bit AVR, 4095 für 12-bit ESP32)
+   * @param analogPin  ADC-Pin, an dem gemessen wird (AIN).
+   * @param fixedResistorOhm Wert des festen Widerstands in Ohm (Standard 10kΩ).
+   * @param adcMax Maximaler ADC-Wert (z. B. 1023 für AVR, 4095 für ESP32)
    */
-  explicit SensorLDR5528(uint8_t analogPin, float pullupOhm = 10000.0f, uint16_t adcMax = 1023);
+  explicit SensorLDR5528(uint8_t analogPin, float pullupOhm = 10000.0f, uint16_t adcMax = 4095);
 
-  /** Initialisiert intern nichts Besonderes — nur Platzhalter für API-Konsistenz. */
+  /**
+   * @brief Initialisiert den Sensor.
+   * Führt eine erste Testmessung durch, um die Verbindung zu prüfen.
+   * @return true bei Erfolg, andernfalls false.
+   */
   bool begin();
 
-  /** Liest den ADC und berechnet Rohwert, Widerstand und geschätzte Lux-Angabe.
-   *  Gibt true zurück, wenn lesen erfolgreich war. */
+  /**
+   * @brief Liest den ADC und berechnet Widerstand und geschätzte Lux.
+   * @return true bei erfolgreichem Auslesen, false bei Fehler.
+   */
   bool read();
 
   /** Roh-ADC-Wert (0..adcMax). */
@@ -42,17 +45,29 @@ public:
   /** Setzt maximalen ADC-Wert (z. B. 1023 oder 4095). */
   void setAdcMax(uint16_t adcMax);
 
-  /** Setzt Pullup-Widerstand in Ohm (falls du andere Hardware verwendest). */
-  void setPullupOhm(float pullupOhm);
+  /** Setzt den Wert des festen Widerstands Ohm. */
+  void setFixedResistorOhm(float fixedResistorOhm);
+
+  /**
+   * @brief Gibt den letzten Fehlercode zurück.
+   * @return Fehlercode (0=OK, 1=Wert unplausibel/Kurzschluss)
+   */
+  int getLastError() const;
+
+  /**
+   * @brief Gibt eine Beschreibung des letzten Fehlers zurück.
+   * @return Fehlerbeschreibung.
+   */
+  const char* getErrorMessage() const;
 
 private:
   uint8_t _pin;
-  float _pullupOhm;
+  float _fixedResistorOhm;
   uint16_t _adcMax;
-
   uint16_t _raw;
-  float _resistance; // Ohm
-  float _lux;        // approximativ
+  float _resistance;  // Ohm
+  float _lux;         // approximativ
+  int _lastError;     // Speichert den Fehlercode der letzten Operation (0 = OK).
 
   /** Hilfsfunktion: ADC -> Spannung (0..Vcc) */
   float adcToVoltage(uint16_t adc) const;

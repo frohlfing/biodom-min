@@ -11,27 +11,30 @@
   #define ADC_MAX_VALUE 1023
 #endif
 
-SensorLDR5528 ldr(36, 10000.0f, ADC_MAX_VALUE); // GPIO36 (ADC1_0 auf ESP32)
+SensorLDR5528 sensor(36, 10000.0f, ADC_MAX_VALUE); // GPIO36 (ADC1_0 auf ESP32)
 
 void setup() {
-  Serial.begin(115200);
-  delay(50);
-  Serial.println("SensorLDR5528 Beispiel");
-  ldr.begin();
+    Serial.begin(115200);
+    Serial.println("Initialisiere Sensor...");
+    if (!sensor.begin()) {
+        Serial.print("Initialisierung fehlgeschlagen: ");
+        Serial.println(sensor.getErrorMessage());
+    }
 }
 
 void loop() {
-  if (ldr.read()) {
-    Serial.print("Raw: ");
-    Serial.print(ldr.getRaw());
-    Serial.print(" | Rldr(Ohm): ");
-    Serial.print(ldr.getResistance());
-    Serial.print(" | Lux(approx): ");
-    float lx = ldr.getLux();
-    if (isnan(lx)) Serial.println("N/A");
-    else Serial.println(lx);
-  } else {
-    Serial.println("Lesefehler");
-  }
-  delay(1000);
+    if (sensor.read()) {
+        Serial.print(">Raw:");
+        Serial.print(sensor.getRaw());
+        Serial.print(",Ohm:");
+        Serial.print(sensor.getResistance());
+        Serial.print(",Lux:");
+        Serial.println(sensor.getLux());
+    } else {
+        Serial.print("Fehler ");
+        Serial.print(sensor.getLastError());
+        Serial.print(": ");
+        Serial.println(sensor.getErrorMessage());
+    }
+    delay(2000);
 }

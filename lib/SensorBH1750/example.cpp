@@ -8,31 +8,27 @@
 #include <Arduino.h>
 #include "SensorBH1750.h"
 
-SensorBH1750 light; // Standard-I2C-Adresse 0x23
+SensorBH1750 sensor; // Standard-I2C-Adresse 0x23
 
 void setup() {
     Serial.begin(115200);
-    delay(50);
-    Serial.println("Starte SensorBH1750 Test...");
-    Wire.begin(); // Default SDA/SCL Pins benutzen
-    if (!light.begin()) {
+    Wire.begin(21, 22); // GPIO21 für SDA, GPIO22 für SCL (default)
+    Serial.println("Initialisiere Sensor...");
+    if (!sensor.begin()) {
         Serial.print("Initialisierung fehlgeschlagen: ");
-        Serial.println(light.getErrorMessage());
+        Serial.println(sensor.getErrorMessage());
     }
 }
 
 void loop() {
-    if (light.read()) {
-        float lux = light.getLux();
-        Serial.print(">");
-        Serial.print("LightLux:");
-        Serial.print(lux);
-        Serial.println();
+    if (sensor.read()) {
+        Serial.print(">LightLux:");
+        Serial.println(sensor.getLux());
     } else {
         Serial.print("Fehler ");
-        Serial.print(static_cast<int>(light.getLastError()));
+        Serial.print(sensor.getLastError());
         Serial.print(": ");
-        Serial.println(light.getErrorMessage());
+        Serial.println(sensor.getErrorMessage());
     }
-    delay(1000);
+    delay(2000);
 }

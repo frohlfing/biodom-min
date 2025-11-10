@@ -1,38 +1,69 @@
 #include "SensorCapacitiveSoil.h"
 
 SensorCapacitiveSoil::SensorCapacitiveSoil(uint8_t analogPin, int dryValue, int wetValue)
-    : _pin(analogPin), _dry(dryValue), _wet(wetValue), _lastRaw(0), _lastPct(0) {}
+    : _pin(analogPin), _dry(dryValue), _wet(wetValue), _raw(-1), _percent(-1), _lastError(0) {}
 
-void SensorCapacitiveSoil::begin() {
-    // Analogpins brauchen unter ESP32 keinen speziellen pinMode, aber setzen wir ihn zur Klarheit:
-    pinMode(_pin, INPUT);
+bool SensorCapacitiveSoil::begin() {
+    // Für den analogen Sensor besteht die "Initialisierung" aus einem ersten
+    // erfolgreichen Leseversuch, um die Verbindung zu verifizieren.
+    return read();
 }
 
 bool SensorCapacitiveSoil::read() {
-    // analogRead Rückgabewerte können je nach Plattform variieren (0..4095 auf ESP32)
-    int val = analogRead(_pin);
-    _lastRaw = val;
-
-    // Mappe Rohwert auf Prozent. Annahme: dry > wet. Wenn invertiert, wird Ergebnis begrenzt.
-    int pct = map(val, _dry, _wet, 0, 100);
-    // Falls dry < wet (ungewöhnlich), korrigiere die Zuordnung
-    if (_dry < _wet) {
-        pct = map(val, _wet, _dry, 0, 100);
+    // Es wird vorausgesetzt, dass dry größer wet ist!
+    if (_dry <= _wet) {
+        _raw = -1;
+        _percent = -1;
+        _lastError = 1; // Kalibrierung ungültig
+        return false;
     }
 
-    _lastPct = constrain(pct, 0, 100);
+    // analogRead Rückgabewerte können je nach Plattform variieren (0..4095 auf ESP32)
+    int temp = analogRead(_pin);
+
+    // Liegt der Messwert im erwarteten Bereich? 
+    // Falls der Sensor nicht angeschlossen ist, hängt der analoge Pin in der Luft und liefert zufällige Werte (wirkt wie eine Antenne).
+    int tolerance = (_dry - _wet) * 0.25f; // 25% Toleranz
+    if (temp < _wet - tolerance || temp > _dry + tolerance) {
+        _raw = -1;
+        _percent = -1;
+        _lastError = 2; // Messwert unplausibel
+        return false;
+    }
+    
+    // Erfolgreiche Messung
+    _raw = temp;
+
+    // Rohwert auf Prozent umrechnen.
+    int percent = map(temp, _dry, _wet, 0, 100); //  Wandelt den analogen Messwert (temp) linear in einen Prozentwert um.
+    _percent = constrain(percent, 0, 100); // Stellt sicher, dass der berechnete Prozentwert immer im gültigen Bereich von 0 bis 100 liegt.
+
+    _lastError = 0;
     return true;
 }
 
 int SensorCapacitiveSoil::getRaw() const {
-    return _lastRaw;
+    return _raw;
 }
 
 int SensorCapacitiveSoil::getPercent() const {
-    return _lastPct;
+    return _percent;
 }
 
 void SensorCapacitiveSoil::setCalibration(int dryValue, int wetValue) {
     _dry = dryValue;
     _wet = wetValue;
+}
+
+int SensorCapacitiveSoil::getLastError() const {
+    return _lastError;
+}
+
+const char* SensorCapacitiveSoil::getErrorMessage() const {
+    switch (_lastError) {
+        case 0: return "OK";
+        case 1: return "Falsche Kalibrierung";
+        case 2: return "Messwert unplausibel";
+        default: return "Sensor nicht bereit";
+    }
 }

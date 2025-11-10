@@ -30,15 +30,6 @@ bool SensorAM2302::read() {
     _temperature = NAN;
     _humidity = NAN;
     return false;
-    
-    // // Alte Variante (nur ein Leseversuch):
-    // _lastError = _sensor.read2(&_temperature, &_humidity, nullptr);
-    // if (_lastError != SimpleDHTErrSuccess) {
-    //     _temperature = NAN;
-    //     _humidity = NAN;
-    //     return false;
-    // }
-    // return true;
 }
 
 float SensorAM2302::getTemperature() const {
@@ -55,7 +46,7 @@ int SensorAM2302::getLastError() const {
 
 const char* SensorAM2302::getErrorMessage() const {
     switch (_lastError) {
-        case SimpleDHTErrSuccess: return "Erfolgreich";
+        case SimpleDHTErrSuccess: return "OK";
         case SimpleDHTErrStartLow: return "Timeout: Start Low";
         case SimpleDHTErrStartHigh: return "Timeout: Start High";
         case SimpleDHTErrDataLow: return "Timeout: Daten Low";

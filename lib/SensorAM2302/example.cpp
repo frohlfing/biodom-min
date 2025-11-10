@@ -13,20 +13,19 @@ SensorAM2302 sensor(13); // GPIO13
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("Starte SensorAM2302-Test...");
+    Serial.println("Initialisiere Sensor...");
+    if (!sensor.begin()) {
+        Serial.print("Initialisierung fehlgeschlagen: ");
+        Serial.println(sensor.getErrorMessage());
+    }
 }
 
 void loop() {
     if (sensor.read()) {
-        Serial.print(">");
-        Serial.print("Temperatur:"); // °C
+        Serial.print(">Temperatur:"); // °C
         Serial.print(sensor.getTemperature());
-
-        Serial.print(",");
-        Serial.print("Luftfeuchtigkeit:"); // Prozent
-        Serial.print(sensor.getHumidity());
-
-        Serial.println();
+        Serial.print(",Luftfeuchtigkeit:"); // Prozent
+        Serial.println(sensor.getHumidity());
     } else {
         Serial.print("Fehler ");
         Serial.print(sensor.getLastError());

@@ -6,27 +6,28 @@
  * Sie initialisiert alle Sensoren und Aktoren, liest periodisch Messwerte aus,
  * wendet die Steuerungslogik an und aktualisiert die Anzeige.
  * 
- * @version 1.0.1
- * @date 19.11.2025
+ * @version 1.0.2
+ * @date 10.11.2025
  * @author Frank Rohlfing
  */
 
 #include <Arduino.h>
-#include <SD.h> // <-- KORREKTUR: Notwendig für den 'File'-Datentyp
+#include <SD.h>
+#include <Wire.h>
 
 // -- Einbinden der Konfiguration und der lokalen Bibliotheken --
 #include "config.h"
 #include "secrets.h"
+#include "ArduCamMini2MPPlusOV2640.h"
+#include "LED.h"
+#include "MicroSDCard.h"
+#include "OLEDDisplaySH1106.h"
+#include "Relay.h"
 #include "SensorAM2302.h"
 #include "SensorBH1750.h"
 #include "SensorCapacitiveSoil.h"
 #include "SensorDS18B20.h"
 #include "SensorXKCY25NPN.h"
-#include "Relay.h"
-#include "LED.h"
-#include "OLEDDisplaySH1106.h"
-#include "ArduCamMini2MPPlusOV2640.h"
-#include "MicroSDCard.h"
 
 // === Globale Objektinstanzen ===
 // Hier werden für alle Hardware-Komponenten Objekte erstellt.
@@ -128,7 +129,14 @@ void setup() {
     // Z4
     debugLed.begin(); // LED wird initialisiert (und ist standardmäßig aus)
 
-    // Z1
+    // --- I2C-Bus initialisieren ---
+    // Dies muss nur einmal vor dem begin() aller I2C-Geräte geschehen.
+    // Für den ESP32 ist es eine gute Praxis, die SDA- und SCL-Pins explizit anzugeben.
+    if (!Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL)) {
+      halt("I2C FEHLER");
+    }
+
+    // Z1 (I2C-Gerät)
     display.begin();  // TODO: Fehlerhandling wie bei den Sensoren hinzufügen
     display.addLogLine("Systemstart...");
     delay(print_delay);
@@ -142,26 +150,28 @@ void setup() {
     display.addLogLine("Luftsensor OK");
     delay(print_delay);
 
-    // TODO ab hier die Sensoren usw. überarbeiten
-
     // S2
-    if (!soilTempSensor.read()) { 
+    if (!soilTempSensor.begin()) { 
       halt("Bodentemp. FEHLER"); 
     } 
-    display.addLogLine("Bodentemp. OK"); 
+    display.addLogLine("Bodentemperatur OK"); 
     delay(print_delay);
 
     // S3  
-    soilMoistureSensor.begin();
-    display.addLogLine("Bodenfeuchte OK");
+    if (!soilMoistureSensor.begin()) { 
+      halt("Bodenfeuchte FEHLER"); 
+    } 
+    display.addLogLine("Bodenfeuchtesensor OK"); 
     delay(print_delay);
 
     // S4
-    waterLevelSensor.begin();
-    display.addLogLine("Wasserstand OK");
+    if (!waterLevelSensor.begin()) {
+        halt("Wasserstand FEHLER"); 
+    } 
+    display.addLogLine("Wasserstandsensor OK");
     delay(print_delay);
     
-    // S5
+    // S5 (I2C-Gerät)
     if (!lightSensor.begin()) { 
       halt("Lichtsensor FEHLER"); 
     } 
@@ -177,7 +187,7 @@ void setup() {
     display.addLogLine("SD-Karte OK"); 
     delay(print_delay);
 
-    // Z3
+    // Z3 (I2C-Gerät)
     if (!camera.begin()) { 
       halt("Kamera FEHLER"); 
     } 

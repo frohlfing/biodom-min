@@ -17,13 +17,14 @@ public:
     explicit SensorXKCY25NPN(uint8_t pin, bool useInternalPullup = false);
 
     /**
-     * @brief Initialisiert den Sensor (Pinmodus).
+     * @brief Initialisiert den Sensor (setzt den Pin-Modus).
+     * @return Gibt immer true zurück, da die Initialisierung nicht fehlschlagen kann.
      */
-    void begin();
+    bool begin();
 
     /**
      * @brief Liest den aktuellen Zustand des Sensors.
-     * @return true, wenn Wasser erkannt wurde; false sonst.
+     * @return Gibt immer true zurück, da das Lesen eines digitalen Pins nicht fehlschlagen kann.
      */
     bool read();
 
@@ -34,13 +35,19 @@ public:
     bool isWaterDetected() const;
 
     /**
-     * @brief Gibt eine kurze Beschreibung der empfohlenen Verdrahtung zurück.
-     * @return const char* mit Hinweis auf Pull‑Up und Versorgungsspannung.
+     * @brief Gibt den letzten Fehlercode zurück.
+     * @return Fehlercode (immer 0, da keine Fehler erkannt werden können).
      */
-    const char* wiringNotes() const;
+    int getLastError() const;
+
+    /**
+     * @brief Gibt eine Beschreibung des letzten Fehlers zurück.
+     * @return Fehlerbeschreibung.
+     */
+    const char* getErrorMessage() const;
 
 private:
-    uint8_t _pin;
-    bool _useInternalPullup;
-    bool _lastState;
+    uint8_t _pin;               // Der GPIO-Pin, an dem der Sensor angeschlossen ist.
+    bool _useInternalPullup;    // Speichert, ob der interne Pull-Up-Widerstand des MCU verwendet werden soll.
+    bool _waterDetected;        // Speichert das Ergebnis der letzten Messung (true, wenn Wasser erkannt wurde).
 };
