@@ -67,10 +67,9 @@ constexpr bool WATER_LEVEL_TRIGGERED = false; // LOW/false = Wasser erkannt
 constexpr int LIGHT_ON_HOUR = 6;    // Stunde, 0-23: Ab wann soll die Lampe angehen?
 constexpr int LIGHT_OFF_HOUR = 20;  // Stunde, 0-23: Ab wann soll die Lampe ausgehen?
 
-// Schwellwerte für Lichtsensor (S5) 
-// Zwischen diesen Werten wird nur eine Lampe zugeschaltet.
-constexpr float LIGHT_LUX_THRESHOLD_BRIGHT = 15000.0f; // Lux-Wert: Hell genug, keine Lampe an.
-constexpr float LIGHT_LUX_THRESHOLD_DARK   = 5000.0f;  // Lux-Wert, Zu dunkel, beide Lampen an.
+// Schwellwerte für Lichtsensor (S5), dass selbst in der Licht-An-Zeit eine oder beide Lampen aus bleiben dürfen 
+constexpr float LIGHT_LUX_THRESHOLD_DARK   = 5000.0f;  // Lux-Wert: ist das Tageslicht heller, bleibt eine Lampe aus
+constexpr float LIGHT_LUX_THRESHOLD_BRIGHT = 15000.0f; // Lux-Wert: ist das Tageslicht heller, bleiben beide Lampen aus
 
 // Laufzeit des Lüfters (A4)
 constexpr unsigned long FAN_COOLDOWN_DURATION_MS = 300000;  // in ms (Empfehlung: 5 Minuten)

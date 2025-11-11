@@ -143,7 +143,9 @@ void log(const char* message) {
  * @brief Initialisierungsroutine, wird einmal beim Start ausgeführt.
  */
 void setup() {
-    // Z4
+    // Initialisiere den Zufallsgenerator mit einem unvorhersehbaren Wert
+    // von einem offenen Analog-Pin (hier der ungenutzte GPIO36).
+    randomSeed(analogRead(36));
 
     // --- Debug-LED (Z4) initialisieren ---
 
@@ -400,36 +402,83 @@ void handleDisplay() {
  * @brief Implementiert die Steuerungslogik für alle Aktoren.
  */
 void handleControlLogic() {
-    // Annahme: Es ist eine RTC/NTP-Bibliothek verfügbar. Hier als Dummy-Implementierung.
+    // TODO: Die Zeit über das Internet via NTP (Network Time Protocol) abrufen.
+    //  Hier als Dummy-Implementierung.
     int currentHour = 10; 
+
+    // -- Steuerung für die Lampen (A1 und A2) --
+    
     if (currentHour >= LIGHT_ON_HOUR && currentHour < LIGHT_OFF_HOUR) {
-        lamp1Relay.on(); lamp2Relay.on();
+        // "Licht an"-Zeitfenster ist gegeben
+        // Messwert des Tageslichtsensors abgreifen
+        if (!isnan(currentLightLux)) {
+            // Wir haben einen gültigen Messwert für das Tageslicht .
+            if (currentLightLux > LIGHT_LUX_THRESHOLD_BRIGHT) {
+                // Hell genug: Beide Lampen können aus bleiben.
+                lamp1Relay.off();
+                lamp2Relay.off();
+            } else if (currentLightLux > LIGHT_LUX_THRESHOLD_DARK) {
+                // Mittelhell: Eine Lampe zur Unterstützung einschalten.
+                 if (random(2) == 0) {
+                    // Fall 1: Wähle Lampe 1
+                    lamp1Relay.on();
+                    lamp2Relay.off();
+                } else {
+                    // Fall 2: Wähle Lampe 2
+                    lamp1Relay.off();
+                    lamp2Relay.on();
+                }
+            } else {
+                // Zu dunkel: Volle Beleuchtung mit beiden Lampen.
+                lamp1Relay.on();
+                lamp2Relay.on();
+            }
+        } else {
+            // Der Lichtsensor liefert keinen gültigen Wert.
+            // Um die Pflanzen nicht zu gefährden, schalten wir im Zweifel beide Lampen ein.
+            lamp1Relay.on();
+            lamp2Relay.on();
+        }
     } else {
-        lamp1Relay.off(); lamp2Relay.off();
+        // Außerhalb des Zeitfensters: Beide Lampen sind immer aus, egal wie dunkel es ist.
+        lamp1Relay.off();
+        lamp2Relay.off();
     }
 
-    if (currentSoilTemp < SOIL_TEMPERATUR_TARGET) { heaterRelay.on(); } 
-    else if (currentSoilTemp > SOIL_TEMPERATUR_TARGET + 0.5f) { heaterRelay.off(); }
+    // -- Steuerung für den Heizer (A3) --
+
+    if (currentSoilTemp < SOIL_TEMPERATUR_TARGET) { 
+        heaterRelay.on(); 
+    } 
+    else if (currentSoilTemp > SOIL_TEMPERATUR_TARGET + 0.5f) { 
+        heaterRelay.off(); 
+    }
+
+    // -- Steuerung für den Lüfter (A4) --
 
     if (currentAirTemp > AIR_TEMPERATUR_THRESHOLD_HIGH && !fanRelay.isOn()) {
         fanRelay.pulse(FAN_COOLDOWN_DURATION_MS);
     }
-    
-    if (isWaterLevelOk) {
-        if (currentHumidity < HUMIDITY_TARGET) { 
-        misterRelay.on(); 
-        } 
-        else if (currentHumidity > HUMIDITY_TARGET + 5.0f) { 
-        misterRelay.off(); 
-        }
-    } else {
-        misterRelay.off();
-    }
+
+    // Steuerung für die Pumpe (A5)
 
     if (isWaterLevelOk && !pumpRelay.isOn()) {
         if (currentSoilMoisture < SOIL_MOISTURE_TARGET && currentSoilMoisture != -1) {
-        pumpRelay.pulse(WATERING_DURATION_MS);
+            pumpRelay.pulse(WATERING_DURATION_MS);
         }
+    }
+
+    // -- Steuerung für den Vernebler (A6) --
+    
+    if (isWaterLevelOk) {
+        if (currentHumidity < HUMIDITY_TARGET) { 
+            misterRelay.on(); 
+        } 
+        else if (currentHumidity > HUMIDITY_TARGET + 5.0f) { 
+            misterRelay.off(); 
+        }
+    } else {
+        misterRelay.off();
     }
 }
 

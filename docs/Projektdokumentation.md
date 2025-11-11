@@ -1243,7 +1243,10 @@ Die dafür verfügbaren Sensoren und die zu steuernden Aktoren sind hier nochmal
 Es wird folgende Steuerungslogik programmiert (in `main.cpp`):
 
 *   **Lichtsteuerung (A1 und A2):**  
-Die beiden LED-Lampen werden **rein zeitgesteuert**. Sie schalten sich zur `LIGHT_ON_HOUR` ein und zur `LIGHT_OFF_HOUR` aus. Beide Lampen werden immer gemeinsam geschaltet, um die maximale Lichtleistung zu erzielen.
+Die Lampen können grundsätzlich nur innerhalb eines festgelegten Zeitfensters aktiv werden, das durch `LIGHT_ON_HOUR` (Einschaltzeit) und `LIGHT_OFF_HOUR` (Ausschaltzeit) definiert ist. Außerhalb dieser Zeit bleiben die Lampen immer aus. Innerhalb des Zeitfensters misst der Lichtsensor (S5) kontinuierlich das Tageslicht. Basierend auf den Schwellwerten `LIGHT_LUX_THRESHOLD_BRIGHT` und `LIGHT_LUX_THRESHOLD_DARK` wird die künstliche Beleuchtung dynamisch angepasst:
+    *   **Mittleres Tageslicht:**  Wenn das Tageslicht den mittleren Schwellwert (`_DARK`) überschreitet, reicht eine Lampe, die andere wird ausgeschaltet.
+    *   **Helles Tageslicht:** Wenn das Tageslicht den oberen Schwellwert (`_BRIGHT`) überschreitet, werden beide Lampen ausgeschaltet.
+    *   Ansonsten werden beide Lampen eingeschaltet.
 
 *   **Heizungssteuerung (A3):**  
 Die Heizmatte wird aktiviert, wenn die **Bodentemperatur (S2)** unter den Zielwert `SOIL_TEMPERATUR_TARGET` fällt. Um ein ständiges An- und Ausschalten (Flattern) zu verhindern, wird eine Hysterese implementiert: Die Heizung schaltet sich erst wieder aus, wenn die Temperatur den Zielwert um 0.5°C überschreitet.
