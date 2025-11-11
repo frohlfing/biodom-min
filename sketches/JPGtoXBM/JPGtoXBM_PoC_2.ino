@@ -14,7 +14,7 @@
  *    - true:  Es wird ein künstliches Testbild (ein einfacher horizontaler Strich) anstelle
  *             des echten JPGs verarbeitet. Dies dient dazu, die Korrektheit der Konvertierungsalgorithmen 
  *             (Thresholding/Dithering) und der Display-Ausgabe zu überprüfen.
- *    - false: Es wird das echte JPG-Bild aus der 'image_jpg.h'-Datei verarbeitet.
+ *    - false: Es wird das echte JPG-Bild aus der 'frank_128x64_clean_jpg.h'-Datei verarbeitet.
  * 
  * 2. USE_DITHERING:
  *    - true:  Verwendet den hochwertigen Floyd-Steinberg-Dithering-Algorithmus, um
@@ -56,7 +56,7 @@
 // Schalte zwischen den Testmodi um, indem du 'true' oder 'false' änderst.
 
 // Wähle die Bildquelle
-// true = Simpler horizontaler Strich | false = Echtes JPG aus 'image_jpg.h'
+// true = Simpler horizontaler Strich | false = Echtes JPG aus 'frank_128x64_clean_jpg.h'
 #define USE_TEST_PATTERN false
 
 // Wähle den Konvertierungs-Algorithmus
@@ -78,7 +78,7 @@ U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 // http://tomeko.net/online_tools/file_to_hex.php erstellt werden und darf
 // keine unnötigen Metadaten enthalten.
 #if !USE_TEST_PATTERN
-  #include "frank_128x64_clean_jpg.h"
+  #include "frank_128x64_clean_jpg.h" // definiert das C-Array frank_128x64_clean_jpg[]
 #endif
 
 // --- Ausgabepuffer ---
@@ -254,9 +254,9 @@ void setup() {
         res = JDR_OK;
     #else
         Serial.println("Modus: ECHTES JPG BILD");
-        conv.jpg_data = image_jpg;
+        conv.jpg_data = frank_128x64_clean_jpg;
         conv.jpg_index = 0;
-        conv.jpg_size = sizeof(image_jpg);
+        conv.jpg_size = sizeof(frank_128x64_clean_jpg);
 
         res = jd_prepare(&jdec, jpg_input_callback, workspace, sizeof(workspace), &conv);
         if (res == JDR_OK) {

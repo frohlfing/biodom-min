@@ -28,8 +28,9 @@ public:
     /**
      * @brief Initialisiert das Display.
      * Muss im setup() des Hauptprogramms aufgerufen werden.
+     * @return true bei Erfolg, andernfalls false.
      */
-    void begin();
+    bool begin();
 
     /**
      * @brief Muss regelmäßig in der Hauptschleife (loop()) aufgerufen werden.
@@ -88,6 +89,17 @@ public:
      */
     void showFullscreenAlert(const String &message, bool blink = false);
 
+    // --- Modus 4: Fullscreen Image ---
+    
+     /**
+     * @brief Zeigt ein bildschirmfüllendes Bild im XBM-Format an.
+     * Nützlich für einen Startbildschirm (Splash Screen).
+     * @param width Breite des Bildes in Pixel (sollte 128 sein).
+     * @param height Höhe des Bildes in Pixel (sollte 64 sein).
+     * @param xbm Ein Pointer auf das Byte-Array des Bildes.
+     * @param inverted true, wenn das Bild invertiert dargestellt werden soll (weiße Punkte auf schwarzen Hintergrund).
+     */
+    void showFullscreenXBM(uint8_t width, uint8_t height, const uint8_t *xbm, bool inverted = false);
 
 private:
     U8G2_SH1106_128X64_NONAME_F_HW_I2C _u8g2; // Die Instanz der U8g2-Grafikbibliothek, die das Display steuert.

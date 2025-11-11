@@ -14,14 +14,11 @@
 #include <Wire.h>
 #endif
 
-// Display-Initialisierung
-// Ich verwende die bekannte Konfiguration für das SH1106 I2C Display.
+// Display-Initialisierung (aus Sketch OLED_Display_SSH1106_Test.ino übernommen)
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
 // Das Testbild im XBM-Format ---
-#include "frank_128x64_xbm.h" 
-#define portrait_width 128
-#define portrait_height 64
+#include "frank_128x64_xbm.h" // definiert das C-Array frank_128x64_xbm[]
 
 void setup() {
     Serial.begin(115200);
@@ -42,7 +39,7 @@ void setup() {
     // --- Der Kern dieses Tests ---
     // Zeichne das konvertierte Portrait in den Puffer.
     // Da das Bild bereits 128x64 Pixel groß ist, zeichnen ich es an der Ecke (0,0).
-    u8g2.drawXBMP(0, 0, portrait_width, portrait_height, portrait_bits);
+    u8g2.drawXBMP(0, 0, 128, 64, frank_128x64_xbm);
     
     // Den Puffer-Inhalt an das Display senden, um ihn sichtbar zu machen
     u8g2.sendBuffer();

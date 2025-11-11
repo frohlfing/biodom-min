@@ -21,7 +21,7 @@
 
 // Include JPG-Array (wenn realer Modus)
 #if !USE_TEST_PATTERN
-  #include "frank_128x64_clean_jpg.h" // erwartet: static const unsigned char image_jpg[] = { ... };
+  #include "frank_128x64_clean_jpg.h" // definiert das C-Array frank_128x64_clean_jpg[]
 #endif
 
 // ==================== Hardware: U8g2 SH1106 I2C ====================
@@ -149,7 +149,7 @@ void setup() {
   } else {
     Serial.println("Modus: echtes JPG, decode starte...");
     // decode aus Array mit Bodmers drawJpg API
-    bool ok = TJpgDec.drawJpg((const uint8_t*)image_jpg, sizeof(image_jpg), jpgRender);
+    bool ok = TJpgDec.drawJpg((const uint8_t*)frank_128x64_clean_jpg, sizeof(frank_128x64_clean_jpg), jpgRender);
     if (!ok) {
       Serial.println("TJpgDec.drawJpg failed");
       // Fallback: markiere Fehler visuell

@@ -51,8 +51,8 @@ Die Sketche hierzu sind unter `sketches/JPGtoXBM` abgelegt.
 1.  **Proof Of Concept 1:** Wie wird ein im XBM-Format umgewandeltes JPG-Bild auf dem Display angezeigt? Ist die Qualität ausreichend? 
     *  Als Bild habe ich mein Portrait gewählt, es mit GIMP auf 128x64 Pixel verkleinert und im JPG-Format gespeichert:  
     ![JPG-Bild](./assets/frank_128x64.jpg)  
-    Das JPG-Bild habe ich dann mit dem Tool [Online Image Converter to XBM](https://www.online-utility.org/image/convert/to/XBM) konvertiert:  
-    ![XBM-Bild](./assets/frank_128x64.XBM.png)  
+    Das JPG-Bild habe ich dann mit dem Online-Tool [Convert Image to XBM](https://www.online-utility.org/image/convert/to/XBM) konvertiert:  
+    ![XBM-Bild](./assets/frank_128x64.xbm.png)  
     Die resultierenden XBM-Daten habe ich als Headerdatei unter `frank_128x64_xbm.h` abgelegt. Einmal im `Include`-Verzeichnis (da ich sie auch als Splash-Screen verwenden möchte) und einmal in Ordner, in dem auch der Sketch liegt (damit die Arduino IDE diese einbinden kann).
     *  Um das XBM-Bild anzuzeigen, habe ich den Demo-Sketch `OLED_Display_SSH1106_Test.ino` genommen und alles bis auf das absolut Notwendigste entfernt. 
 

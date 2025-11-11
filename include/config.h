@@ -37,34 +37,43 @@ constexpr int PIN_MISTER_RELAY = 32;    // GPIO-Pin für das Relais des Luftbefe
 constexpr int PIN_DEBUG_LED = 5;        // GPIO-Pin für die Debug-LED
 
 // ------------------------------------------------------------
-// Schwellwerte und Kalibrierung
+// Kalibrierung
 // ------------------------------------------------------------
-
-// Bodentemperatur
-constexpr float SOIL_TEMPERATUR_TARGET = 24.0;  // Zielwert für Bodentemperatur
 
 // Bodenfeuchte
 constexpr int SOIL_MOISTURE_ADC_DRY = 2500; // ADC-Wert, wenn der Sensor in der Luft hängt (komplett trocken)
 constexpr int SOIL_MOISTURE_ADC_WET = 1100; // ADC-Wert, wenn der Sensor in Wasser getaucht ist (komplett nass)
-constexpr int SOIL_MOISTURE_TARGET = 50;    // Zielwert für Bodenfeuchte in Prozent
 
-// Raumtemperatur
+// ------------------------------------------------------------
+// Steuerungsparameter
+// ------------------------------------------------------------
+
+// Raumtemperatur (S1)
 constexpr float AIR_TEMPERATUR_THRESHOLD_HIGH = 28.0; // Oberhalb dieser Temperatur (°C) wird der Lüfter eingeschaltet
 
-// Luftfeuchtigkeit
+// Luftfeuchtigkeit (S1)
 constexpr float HUMIDITY_TARGET = 70.0; // Zielwert für Luftfeuchtigkeit (%), steuert Befeuchter
 
-// Wasserstand
-constexpr bool WATER_LEVEL_TRIGGERED = false;    // LOW/false = Wasser erkannt
+// Bodentemperatur (S2)
+constexpr float SOIL_TEMPERATUR_TARGET = 24.0; // Zielwert für Bodentemperatur
 
-// ------------------------------------------------------------
-// Steuerungsparameter (Zeitangaben und weitere Regelungsparameter)
-// ------------------------------------------------------------
+// Bodenfeuchte (S3)
+constexpr int SOIL_MOISTURE_TARGET = 50; // Zielwert für Bodenfeuchte in Prozent
 
-// Lampen
-constexpr int LIGHT_ON_HOUR = 6;    // Uhrzeit (Stunde, 0-23): Ab wann soll die Lampe angehen?
-constexpr int LIGHT_OFF_HOUR = 20;  // Uhrzeit (Stunde, 0-23): Ab wann soll die Lampe ausgehen?
+// Wasserstand (S4)
+constexpr bool WATER_LEVEL_TRIGGERED = false; // LOW/false = Wasser erkannt
 
-// Bewässerung
-constexpr unsigned long WATERING_DURATION_MS = 5000;        // Dauer der Bewässerung in Millisekunden (Empfehlung: 5 Sekunden)
-constexpr unsigned long FAN_COOLDOWN_DURATION_MS = 300000;  // Laufzeit des Lüfters in Millisekunden (Empfehlung: 5 Minuten)
+// Betriebszeit für Lampen (A1 und A2)
+constexpr int LIGHT_ON_HOUR = 6;    // Stunde, 0-23: Ab wann soll die Lampe angehen?
+constexpr int LIGHT_OFF_HOUR = 20;  // Stunde, 0-23: Ab wann soll die Lampe ausgehen?
+
+// Schwellwerte für Lichtsensor (S5) 
+// Zwischen diesen Werten wird nur eine Lampe zugeschaltet.
+constexpr float LIGHT_LUX_THRESHOLD_BRIGHT = 15000.0f; // Lux-Wert: Hell genug, keine Lampe an.
+constexpr float LIGHT_LUX_THRESHOLD_DARK   = 5000.0f;  // Lux-Wert, Zu dunkel, beide Lampen an.
+
+// Laufzeit des Lüfters (A4)
+constexpr unsigned long FAN_COOLDOWN_DURATION_MS = 300000;  // in ms (Empfehlung: 5 Minuten)
+
+// Dauer der Bewässerung (A5)
+constexpr unsigned long WATERING_DURATION_MS = 5000; // in ms (Empfehlung: 5 Sekunden)

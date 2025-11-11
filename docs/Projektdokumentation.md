@@ -1299,7 +1299,27 @@ Damit lege ich folgende Sollwerte als Voreinstellung fest (diese können per Web
   Nach dem Start wird eine Funktions-Prüfung durchgeführt. Die Ergebnisse scrollen durch das Display. Wenn alles funktioniert, wird ein Splash-Screen (mein Portrait) für en paar Sekunden angezeigt. Danach wird das Dashboard angezeigt. 
 
 * **Dashboard:**
-  Das Dashboard teilt den Bildschirm in vier gleichmäßige Bereiche auf. In jedem Bereich wird ein Messwert angezeigt. Die Werte werden mit passenden Icons versehen.
+  Das Dashboard teilt den Bildschirm in vier gleichmäßige Bereiche auf. In jedem Bereich wird ein Messwert angezeigt. 
+
+  Die Werte im Dashboard werden mit passenden Icons versehen:
+
+  | Icon (XMB)     |                                                                | Verwendung                                                                       |
+  |----------------|----------------------------------------------------------------|----------------------------------------------------------------------------------|
+  | thermometer    | ![thermometer](./assets/icons/thermometer_16x16.xbm.png)       | Icon für Raumtemperatur (S1)                                                     |
+  | wet            | ![wet](./assets/icons/wet_16x16.xbm.png)                       | Icon für Luftfeuchtigkeit (S1)                                                   |
+  | engine_coolant | ![engine_coolant](./assets/icons/engine_coolant_16x16.xbm.png) | Icon für Bodentemperatur (S2)                                                    |
+  | moisture       | ![moisture](./assets/icons/moisture_16x16.xbm.png)             | Icon für Bodenfeuchte (S3)                                                       |
+  | radiator       | ![radiator](./assets/icons/radiator_16x16.xbm.png)             | Heizung (A3) aktiviert (überlagert Icon für Bodentemperatur)                     |
+  | air            | ![air](./assets/icons/air_16x16.xbm.png)                       | Lüfter (A4) aktiviert (überlagert Icons für Raumtemperatur und Luftfeuchtigkeit) |
+  | rainy_weather  | ![rainy_weather](./assets/icons/rainy_weather_16x16.xbm.png)   | Pumpe (A5) aktiviert (überlagert Icon für Bodenfeuchte)                          |
+  | dry            | ![dry](./assets/icons/dry_16x16.xbm.png)                       | Vernebler (A6) aktiviert (überlagert Icon für Bodenfeuchte)                      |
+  
+
+  Die ursprünglichen Icons habe ich bei [Icons8](https://icons8.com/icons/all--mono--size-small--technique-line) gefunden. 
+  Diese unterliegen der [Universal Multimedia License von Icons8](https://intercom.help/icons8-7fb7577e8170/en/articles/5534926-universal-multimedia-license-agreement-for-icons8).
+  Demnach dürfen sie verwendet werden, solange das Projekt nicht-kommerziell ist. 
+  
+  Die Icons habE ich mit GIMP in das XMB-Format konvertiert und im `Include`-Verzeichnis gespeichert, so dass sie auf dem OLED-Display angezeigt werden können.
 
 * **Warnung bei niedrigen Wasserstand:**
   Bevor der Wasserreservoir (Teich) trockenläuft, soll nicht das Dashboard, sondern eine blinkende Warnung auf dem Display angezeigt werden (gern mit Icon). Über das Handy soll der Benutzer auch gewarnt werden (per E-Mail?).

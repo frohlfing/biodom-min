@@ -5,8 +5,8 @@ OLEDDisplaySH1106::OLEDDisplaySH1106(const uint8_t resetPin)
 {
 }
 
-void OLEDDisplaySH1106::begin() {
-    _u8g2.begin();
+bool OLEDDisplaySH1106::begin() {
+    return _u8g2.begin(); 
 }
 
 void OLEDDisplaySH1106::clear() {
@@ -16,6 +16,7 @@ void OLEDDisplaySH1106::clear() {
 }
 
 void OLEDDisplaySH1106::update() {
+    // Diese Funktion soll in der Hauptschleife (loop) kontinuierlich aufgerufen werden.
     if (_currentMode == ALERT && _isBlinking) {
         // Blink-Logik: Alle 500ms den Sichtbarkeitsstatus wechseln
         if (millis() - _lastBlinkTime > 500) {
@@ -26,7 +27,7 @@ void OLEDDisplaySH1106::update() {
     }
 }
 
-// --- Log-Modus ---
+// --- Modus 1: Scrolling Log ---
 
 void OLEDDisplaySH1106::addLogLine(const String &text) {
     _currentMode = LOG;
@@ -66,7 +67,7 @@ void OLEDDisplaySH1106::_drawLog() {
     _u8g2.sendBuffer();
 }
 
-// --- Dashboard-Modus ---
+// --- Modus 2: Dashboard ---
 
 void OLEDDisplaySH1106::setDashboardText(Quadrant q, const String &text) {
     _dashboardText[q] = text;
@@ -113,7 +114,7 @@ void OLEDDisplaySH1106::_drawDashboard() {
     _u8g2.sendBuffer();
 }
 
-// --- Alert-Modus ---
+// --- Modus 3: Fullscreen Alert ---
 
 void OLEDDisplaySH1106::showFullscreenAlert(const String &message, bool blink) {
     _currentMode = ALERT;
@@ -144,4 +145,27 @@ void OLEDDisplaySH1106::_drawFullscreenAlert() {
         }
     }
    _u8g2.sendBuffer();
+}
+
+// --- Modus 4: Fullscreen Image ---
+
+void OLEDDisplaySH1106::showFullscreenXBM(uint8_t width, uint8_t height, const uint8_t *xbm, bool inverted) {
+    _currentMode = NONE; // Dies ist ein einmaliger Zeichenvorgang, kein persistenter Modus
+    _u8g2.clearBuffer();
+    
+    // Das XBM-Format verwendet '1' für schwarze Pixel. U8g2 zeichnet '1' standardmäßig als weiße Pixel.
+    if (inverted) {
+        // Standardverhalten!
+        _u8g2.setDrawColor(1);
+    } else {
+        _u8g2.setDrawColor(1); // Farbe auf weiß
+        _u8g2.drawBox(0, 0, 128, 64); // Weiße Leinwand
+        _u8g2.setDrawColor(0); // Farbe auf schwarz
+    }
+
+    _u8g2.drawXBMP(0, 0, width, height, xbm);
+    _u8g2.sendBuffer();
+
+    // Zeichenfarbe für nachfolgende Operationen zurücksetzen
+    _u8g2.setDrawColor(1); 
 }
