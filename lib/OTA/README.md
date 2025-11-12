@@ -15,8 +15,23 @@ Für die Nutzung von OTA muss die `platformio.ini`-Datei wie folgt konfiguriert 
 ; ...
 upload_protocol = espota
 upload_port = biodom-mini.local
+upload_flags = --auth=${sysenv.OTA_PASSWORD}
+
 ```
 Der `upload_port` ist die mDNS-Adresse (Hostname + Suffix ".local") oder IP-Adresse. 
+
+In `upload_flags` wird das Passwort angegeben - am besten indirekt über die Umgebungsvariable `OTA_PASSWORD`, damit es nicht in der Datei steht und vom Git-Repository ausgeschlossen werden muss!
+
+Unter Einstellungen/Arbeitsbereich/Terminal können Umgebungsvariablen definiert werden:
+Dabei wird `workspace.json` im `AppData`-Ordner des Benutzers geöffnet, in der folgender Eintrag hinterlegt werden muss:
+
+```json
+"settings": {
+    "terminal.integrated.env.windows": {
+        "OTA_PASSWORD": "dein-sicheres-passwort"
+    }
+}
+```
 
 ## 📜 Lizenz
 
