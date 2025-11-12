@@ -1198,7 +1198,7 @@ Den Sachaltplan habe ich mit KiCad 9.0 erstellt.
 * ArduinoIDE (nur für den erster schneller Funktionstest und Proof Of Concepts, die Sketches liegen im Verzeichnis `sketches`)
 * ESP-Prog für das Debuggen (sofern nötig)
 * Webinterface via Websocket (Frontend mit HTML, CSS, Vanilla JS, Single-Page)
-* OTA-Upload (Over the Air) für das Produktivsystem
+* OTA-Upload (Over-The-Air) für das Produktivsystem
 
 Mit der PlatformUI wird für jedes Bauteil eine lokale Bibliothek bereitgestellt und ausführlich dokumentiert.
 
@@ -1346,6 +1346,56 @@ Damit lege ich folgende Sollwerte als Voreinstellung fest (diese können per Web
 * **Webinterface:**
 
 Über das Handy kann das Dashboard angezeigt werden. Hier können auch die Sollwerte verändert werden. Außerdem gibt es eine Gallery mit den aufgenommenen Bilder und die Möglichkeit, diese als Zeitraffer-Video abzuspielen. Eine weitere Funktion zeigt Liniendiagramme mit den Messwerten.
+
+### OTA (Over-The-Air) Update
+
+OTA ermöglicht, den Code über WLAN aktualisieren zu können. 
+
+* Schritt 1: `platformio.ini` konfigurieren:
+
+    ```ini
+    ; --- OTA-Konfiguration ---
+    upload_protocol = espota ; "ESP OTA"-Protokoll für Uploads verwenden
+    upload_port = biodom-mini.local  ; Hostname oder IP-Adresse
+    ```
+
+    `biodom-mini.local` ist der Hostname. Statt dessen könnte auch die IP-Adresse des ESP32 angegeben werden.
+
+* Schritt 2: Code in `main.cpp` hinzufügen
+
+    ```cpp
+    #include <WiFi.h>          // für die WLAN-Verbindung
+    #include <ArduinoOTA.h>    // für den OTA-Dienst
+
+    /**
+     * @brief Stellt eine Verbindung zum WLAN her.
+     * Zeigt den Verbindungsstatus auf dem Display an.
+     */
+    void setupWifi() {
+        log("Verbinde mit WLAN...");
+        WiFi.mode(WIFI_STA); // Nur als Client (Station)
+        WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+        // Warte auf die Verbindung und gib Feedback
+        int attempts = 0;
+        while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+            delay(500);
+            Serial.print(".");
+            attempts++;
+        }
+
+        if (WiFi.status() == WL_CONNECTED) {
+            String ip = "IP: " + WiFi.localIP().toString();
+            log("WLAN verbunden!");
+            log(ip.c_str());
+        } else {
+            halt("WLAN FEHLER", "Verbindung fehlgeschlagen");
+        }
+    }
+
+    ```
+
+
 
 ## Anhang
 

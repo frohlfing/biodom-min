@@ -52,10 +52,10 @@ constexpr int SOIL_MOISTURE_ADC_WET = 1100; // ADC-Wert, wenn der Sensor in Wass
 constexpr float AIR_TEMPERATUR_THRESHOLD_HIGH = 28.0; // Oberhalb dieser Temperatur (°C) wird der Lüfter eingeschaltet
 
 // Luftfeuchtigkeit (S1)
-constexpr float HUMIDITY_TARGET = 70.0; // Zielwert für Luftfeuchtigkeit (%), steuert Befeuchter
+constexpr float HUMIDITY_TARGET = 48.0; // Zielwert für Luftfeuchtigkeit (%), steuert Befeuchter
 
 // Bodentemperatur (S2)
-constexpr float SOIL_TEMPERATUR_TARGET = 24.0; // Zielwert für Bodentemperatur
+constexpr float SOIL_TEMPERATUR_TARGET = 19.0; // Zielwert für Bodentemperatur
 
 // Bodenfeuchte (S3)
 constexpr int SOIL_MOISTURE_TARGET = 50; // Zielwert für Bodenfeuchte in Prozent

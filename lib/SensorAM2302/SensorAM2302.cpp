@@ -12,7 +12,7 @@ bool SensorAM2302::begin() {
 bool SensorAM2302::read() {
     // DHT-Sensoren können aufgrund von Timing-Problemen (Interrupts) fehlschlagen.
     // Ein "Retry"-Mechanismus ist die Standardlösung, um die Zuverlässigkeit zu erhöhen.
-    int retries = 3; // Wir versuchen es bis zu 3 Mal.
+    int retries = 20; // Wir versuchen es max. 20 * 50 ms = 1 Sekunde).
     for (int i = 0; i < retries; i++) {
         _lastError = _sensor.read2(&_temperature, &_humidity, nullptr);
         

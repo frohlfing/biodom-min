@@ -12,12 +12,14 @@
  */
 
 #include <Arduino.h>
+#include <WiFi.h>
 #include <SD.h>
 #include <Wire.h>
 
 // -- Einbinden der Konfiguration und der lokalen Bibliotheken --
 #include "config.h"
 #include "secrets.h"
+#include "OTA.h"
 #include "ArduCamMini2MPPlusOV2640.h"
 #include "LED.h"
 #include "MicroSDCard.h"
@@ -70,6 +72,9 @@ MicroSDCard sdCard(PIN_SPI_SD_CS);    // MicroSD SPI Kartenleser (Z2)
 ArduCamMini2MPPlusOV2640 camera(PIN_SPI_CAMERA_CS); // ArduCAM Mini 2MP Plus, OV2640 (Z3)
 LED debugLed(PIN_DEBUG_LED);          // LED (Z4)
 
+// --- Netzwerk ---
+OTA ota(HOSTNAME, OTA_PASSWORD); 
+
 // === Globale Variablen zur Zustandsspeicherung ===
 
 // --- Sensorwerte ---
@@ -121,10 +126,10 @@ void halt(const char* message, const char* detail = "") {
     // LED dauerhaft einschalten, um den Halt zu signalisieren.
     debugLed.on(); 
 
-    // // Endlosschleife, um das Programm anzuhalten
-    // while (true) {
-    //     delay(100); // Prozessor entlasten
-    // }
+    // Endlosschleife, um das Programm anzuhalten
+    while (true) {
+        delay(100); // Prozessor entlasten
+    }
 }
 
 /**
@@ -139,45 +144,69 @@ void log(const char* message) {
     delay(1000);
 }
 
+void setupWifi() {
+    log("Verbinde mit WLAN...");
+    WiFi.mode(WIFI_STA);
+    WiFi.setHostname(HOSTNAME);  // HOSTNAME ist in config.h definiert
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    int attempts = 0;
+    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+        delay(500);
+        Serial.print(".");
+        attempts++;
+    }
+    if (WiFi.status() != WL_CONNECTED) {
+        halt("WLAN FEHLER", "Verbindung fehlgeschlagen");
+    }
+    log("WLAN verbunden!");
+    String ipMessage = "IP: " + WiFi.localIP().toString();
+    log(ipMessage.c_str());
+    String hostMessage = "Host: " + String(WiFi.getHostname());
+    log(hostMessage.c_str());
+}
+
 /**
  * @brief Initialisierungsroutine, wird einmal beim Start ausgeführt.
  */
 void setup() {
-    // Initialisiere den Zufallsgenerator mit einem unvorhersehbaren Wert
-    // von einem offenen Analog-Pin (hier der ungenutzte GPIO36).
-    randomSeed(analogRead(36));
+    // Zufallsgenerator mit einem unvorhersehbaren Wert von einem offenen Analog-Pin initialisieren 
+    randomSeed(analogRead(36)); // der GPIO36 ist ungenutzt
 
-    // --- Debug-LED (Z4) initialisieren ---
+    // --- Als erstes Debug-LED, Serielle Schnittstelle und Display initialisieren ---
+    // (damit Fehler so früh wie möglich Fehler angezeigt werden können)
 
+    // 1) Debug-LED (Z4) initialisieren
     // Die LED ist standardmäßig aus. 
     // Sie signalisiert, dass da System nicht gestartet werden konnte.
-
     debugLed.begin(); 
 
-    // --- Serielle Schnittstelle initialisieren ---
-
+    // 2) Serielle Schnittstelle initialisieren
     Serial.begin(115200);
     while (!Serial); // Auf serielle Verbindung warten
     Serial.println("--- Biodom Mini startet ---");
 
-    // --- I2C-Bus initialisieren ---
-
-    // Dies muss nur einmal vor dem begin() aller I2C-Geräte geschehen.
+    // 3) I2C-Bus initialisieren
     // Für den ESP32 ist es eine gute Praxis, die SDA- und SCL-Pins explizit anzugeben.
     Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL);
 
-    // --- Hardware-Komponenten initialisieren ---
-
-    // Z1 (I2C-Gerät)
+    // 4) Display (Z1) initialisieren
     if (!display.begin()) {  
         Serial.println("Kein Display! System angehalten.");
+        // halt() sollte hier besser noch nicht aufgerufen werden, da die Funktion das Display voraussetzt
         debugLed.on(); 
         while (true) { delay(100); } // Endlosschleife, um das Programm anzuhalten
     }
 
-    log("Systemstart...");
+    // 5) Netzwerk und OTA initialisieren
+    setupWifi();   // 1. WLAN verbinden
+    if (!ota.begin()) {   // 2. OTA-Dienst auf der bestehenden Verbindung starten
+        halt("OTA FEHLER", "Initialisierung fehlgeschlagen");
+    }
+    log("OTA-Dienst bereit");
 
-    // Sensoren  
+    // --- Restliche Hardware-Komponenten initialisieren ---
+
+    log("Systemstart...");
 
     // S1
     if (!airSensor.begin()) { 
@@ -248,6 +277,8 @@ void setup() {
  * @brief Hauptschleife, wird kontinuierlich ausgeführt.
  */
 void loop() {
+    ota.handle();
+
     unsigned long currentTime = millis();
 
     // Nicht-blockierende Handler aufrufen
@@ -299,7 +330,9 @@ void handleSensors() {
         currentLightLux = lightSensor.getLux(); 
     }
     
-    isWaterLevelOk = waterLevelSensor.read();
+    if (waterLevelSensor.read()) { 
+        isWaterLevelOk = waterLevelSensor.isWaterDetected(); 
+    }
 
     debugLed.off(); // LED aus nach dem Lesen
 
@@ -384,7 +417,7 @@ void handleDisplay() {
         display.setDashboardIcon(OLEDDisplaySH1106::BOTTOM_RIGHT, 16, 16, rainy_weather_16x16_xbm);
     } else {
         // Sonst zeige das Icon für die Bodenfeuchte.
-        display.setDashboardIcon(OLEDDisplaySH1106::BOTTOM_RIGHT, 16, 16, dry_16x16_xbm);
+        display.setDashboardIcon(OLEDDisplaySH1106::BOTTOM_RIGHT, 16, 16, moisture_16x16_xbm);
     }
 
     // Messwert anzeigen
