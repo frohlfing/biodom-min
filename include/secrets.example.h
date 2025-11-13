@@ -5,7 +5,7 @@
  */
 
 // Webinterface
-constexpr char HOSTNAME[] = "biodom-mini";              // Hostname oder IP-Adresse
-constexpr char WIFI_SSID[] = "DEIN_WLAN_NAME";          // WLAN-SSID
-constexpr char WIFI_PASSWORD[] = "DEIN_WLAN_PASSWORT";  // WLAN-Passwort
-constexpr char OTA_PASSWORD[] = "simsalabim";           // Ein Passwort, das beim Upload eingegeben werden muss.
+constexpr char HOSTNAME[] = "biodom-mini";  // Hostname oder IP-Adresse
+constexpr char WIFI_SSID[] = "WOLKE7";      // WLAN-SSID
+constexpr char WIFI_PASSWORD[] = "1234";    // WLAN-Passwort
+constexpr char OTA_PASSWORD[] = "4321";     // Passwort, das beim Upload eingegeben werden muss
