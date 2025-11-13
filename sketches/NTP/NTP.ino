@@ -15,45 +15,10 @@
 //constexpr char OTA_PASSWORD[] = "4321";
 #include "secrets.h"
 
-// NTP-Server und Zeitzonen-Konfiguration
+// NTP-Server und Zeitzonen
 const char* NTP_SERVER = "pool.ntp.org";    // NTP-Server
 const long  GMT_OFFSET = 3600;              // Mitteleuropäische Zeit (MEZ) = UTC+1 = 3600 Sekunden für Zeitzone "Berlin"
-const int   DAYLIGHT_OFFSET = 3600;         // Sommerzeit (MESZ) = UTC+2, also zusätzliche 3600 Sekunden
-
-/**
- * Gibt die aktuelle, formatierte Zeit auf dem Seriellen Monitor aus.
- */
-void printLocalTime() {
-    struct tm timeinfo; // Eine Struktur, um die Zeitinformationen zu speichern
-
-    // getLocalTime() füllt die 'timeinfo'-Struktur. Sie gibt 'false' zurück,
-    // wenn die Zeit noch nicht synchronisiert wurde.
-    if (!getLocalTime(&timeinfo)) {
-        Serial.println("Fehler beim Abrufen der Zeit.");
-        return;
-    }
-
-    // Zeitinformationen formatieren und ausgeben
-    char timeString[20];
-    strftime(timeString, sizeof(timeString), "%d.%m.%Y %H:%M:%S", &timeinfo);
-    Serial.println(timeString);
-}
-
-/**
- * Gibt die aktuelle Stunde des Tages zurück.
- * @return Die Stunde im 24-Stunden-Format (0-23).
- */
-int getLocalHour() {
-    struct tm timeinfo; // Eine Struktur, um die Zeitinformationen zu speichern
-
-    // getLocalTime() füllt die 'timeinfo'-Struktur. Sie gibt 'false' zurück,
-    // wenn die Zeit noch nicht synchronisiert wurde.
-    if (!getLocalTime(&timeinfo)) {
-        Serial.println("Fehler beim Abrufen der Zeit.");
-        return -1;
-    }
-    return timeinfo.tm_hour;
-}
+const int   DAYLIGHT_OFFSET = 3600;         // Sommerzeit (MESZ) = UTC+2, also zusätzliche 3600 Sekunden  (Sommer-/Winterzeit wird automatisch umgestellt)
 
 void setup() {
     Serial.begin(115200);
@@ -74,11 +39,10 @@ void setup() {
     Serial.println(WiFi.getHostname());
 
     // 2. NTP-Client initialisieren
-    // configTime() startet den NTP-Synchronisationsprozess im Hintergrund.
-    configTime(GMT_OFFSET, DAYLIGHT_OFFSET, NTP_SERVER);
+    configTime(GMT_OFFSET, DAYLIGHT_OFFSET, NTP_SERVER); // startet Hintergrund-Task für Zeitsynchronisation 
 
     // 3. Warten auf die erste Synchronisation
-    Serial.print("Warte auf Zeitsynchronisation...");
+    Serial.print("Synchronisiere Zeit...");
     struct tm timeinfo;
     while (!getLocalTime(&timeinfo)) {
         delay(100);
@@ -86,15 +50,26 @@ void setup() {
     }
     Serial.println("\nZeit erfolgreich synchronisiert!");
 
-    // Einmalig die synchronisierte Zeit ausgeben
-    printLocalTime();
-
-    Serial.print("Aktuelle Stunde: ");
-    Serial.println(getLocalHour());
+    // Uhrzeit ausgeben
+    Serial.print("Aktuelle Zeit: ");
+    Serial.print(timeinfo.tm_hour);
+    Serial.print(":");
+    Serial.print(timeinfo.tm_min);
+    Serial.print(":");
+    Serial.println(timeinfo.tm_sec);
 }
 
 void loop() {
-    // Gib die aktuelle Zeit jede Sekunde aus
-    printLocalTime();
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) {
+        Serial.println("Fehler beim Abrufen der Zeit."); // dürfte nie vorkommen, da im Setup die Zeit synchronisiert wurde
+        delay(1000);
+        return;
+    }
+
+    // Zeitinformationen formatieren und ausgeben
+    char timeString[20];
+    strftime(timeString, sizeof(timeString), "%d.%m.%Y %H:%M:%S", &timeinfo);
+    Serial.println(timeString);
     delay(1000);
 }

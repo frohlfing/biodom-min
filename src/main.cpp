@@ -173,7 +173,7 @@ void setup() {
         while (true) { delay(100); } // Endlosschleife, um das Programm anzuhalten
     }
 
-    // --- Netzwerk und OTA starten ---
+    // --- Netzwerkdienste starten ---
 
     // 5) Netzwerk initialisieren
     log("Verbinde mit WLAN...");
@@ -201,6 +201,24 @@ void setup() {
     ArduinoOTA.setPassword(OTA_PASSWORD);
     ArduinoOTA.begin();
     log("OTA-Dienst bereit");
+
+    // 7. NTP-Client initialisieren
+    configTime(GMT_OFFSET, DAYLIGHT_OFFSET, NTP_SERVER); // started Hintergrund-Task für Zeitsynchronisation 
+    log("Synchronisiere Zeit...");
+    attempts = 0;
+    struct tm timeinfo;
+    while (!getLocalTime(&timeinfo) && attempts < 20) { // max. 20 * 500ms = 10 Sekunden lang versuchen
+        delay(500);
+        Serial.print(".");
+        attempts++;
+    }
+    Serial.println();
+    if (!getLocalTime(&timeinfo)) {
+        halt("NTP FEHLER", "Zeit nicht ermittelt");
+    }
+    char timeString[20];
+    strftime(timeString, sizeof(timeString), "%d.%m.%Y %H:%M:%S", &timeinfo);
+    log(timeString);
 
     // --- Restliche Hardware-Komponenten initialisieren ---
 
@@ -433,9 +451,12 @@ void handleDisplay() {
  * @brief Implementiert die Steuerungslogik für alle Aktoren.
  */
 void handleControlLogic() {
-    // TODO: Die Zeit über das Internet via NTP (Network Time Protocol) abrufen.
-    //  Hier als Dummy-Implementierung.
-    int currentHour = 10; 
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) {
+        log("Fehler beim Abrufen der Zeit."); // dürfte nie vorkommen, da im Setup die Zeit synchronisiert wurde
+        return;
+    }
+    int currentHour = timeinfo.tm_hour;
 
     // -- Steuerung für die Lampen (A1 und A2) --
     

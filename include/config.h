@@ -37,6 +37,14 @@ constexpr int PIN_MISTER_RELAY = 32;    // GPIO-Pin für das Relais des Luftbefe
 constexpr int PIN_DEBUG_LED = 5;        // GPIO-Pin für die Debug-LED
 
 // ------------------------------------------------------------
+// NTP (Network Time Protocol) 
+// ------------------------------------------------------------
+
+const char* NTP_SERVER = "pool.ntp.org";    // NTP-Server
+const long  GMT_OFFSET = 3600;              // Mitteleuropäische Zeit (MEZ) = UTC+1 = 3600 Sekunden für Zeitzone "Berlin"
+const int   DAYLIGHT_OFFSET = 3600;         // Sommerzeit (MESZ) = UTC+2, also zusätzliche 3600 Sekunden (Sommer-/Winterzeit wird automatisch umgestellt)
+
+// ------------------------------------------------------------
 // Kalibrierung
 // ------------------------------------------------------------
 
@@ -64,12 +72,12 @@ constexpr int SOIL_MOISTURE_TARGET = 50; // Zielwert für Bodenfeuchte in Prozen
 constexpr bool WATER_LEVEL_TRIGGERED = false; // LOW/false = Wasser erkannt
 
 // Betriebszeit für Lampen (A1 und A2)
-constexpr int LIGHT_ON_HOUR = 6;    // Stunde, 0-23: Ab wann soll die Lampe angehen?
-constexpr int LIGHT_OFF_HOUR = 20;  // Stunde, 0-23: Ab wann soll die Lampe ausgehen?
+constexpr int LIGHT_ON_HOUR = 8;    // Stunde, 0-23: Ab wann soll die Lampe angehen?
+constexpr int LIGHT_OFF_HOUR = 17;  // Stunde, 0-23: Ab wann soll die Lampe ausgehen?
 
 // Schwellwerte für Lichtsensor (S5), dass selbst in der Licht-An-Zeit eine oder beide Lampen aus bleiben dürfen 
-constexpr float LIGHT_LUX_THRESHOLD_DARK   = 5000.0f;  // Lux-Wert: ist das Tageslicht heller, bleibt eine Lampe aus
-constexpr float LIGHT_LUX_THRESHOLD_BRIGHT = 15000.0f; // Lux-Wert: ist das Tageslicht heller, bleiben beide Lampen aus
+constexpr float LIGHT_LUX_THRESHOLD_DARK   = 5.0f;  // Lux-Wert: ist das Tageslicht heller, bleibt eine Lampe aus
+constexpr float LIGHT_LUX_THRESHOLD_BRIGHT = 15.0f; // Lux-Wert: ist das Tageslicht heller, bleiben beide Lampen aus
 
 // Laufzeit des Lüfters (A4)
 constexpr unsigned long FAN_COOLDOWN_DURATION_MS = 300000;  // in ms (Empfehlung: 5 Minuten)
