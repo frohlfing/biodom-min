@@ -25,7 +25,7 @@
 #define FRAMES_NUM 0x06
 
 // --- Pin-Definitionen ---
-const int CS = 17;      // Chip Select für die ArduCAM
+constexpr int CS = 17;      // Chip Select für die ArduCAM
 #define SD_CS 16        // Chip Select für den SD-Kartenleser
 
 // --- Globale Variablen ---
@@ -35,8 +35,8 @@ int total_time = 0;   // Variable für die Zeitmessung
 // ArduCAM-Objekt instanziieren
 ArduCAM myCAM( OV2640, CS );
 
-// Funktions-Prototyp
-uint8_t read_fifo_burst(ArduCAM myCAM);
+// Prototyp
+uint8_t read_fifo_burst(ArduCAM _myCAM);
 
 // =======================================================================================
 // SETUP-Funktion
@@ -71,7 +71,7 @@ void setup() {
     delay(100);
 
     // 2. SPI-Verbindung zur ArduCAM testen
-    while (1) {
+    while (true) {
         // Schreibe einen bekannten Wert (0x55) in ein Testregister und lese ihn sofort wieder aus.
         myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
         temp = myCAM.read_reg(ARDUCHIP_TEST1);
@@ -87,7 +87,7 @@ void setup() {
     }
 
     // 3. Kamerasensor-Modell überprüfen
-    while (1) {    
+    while (true) {
         // Lese die Hersteller-ID (vid) und Produkt-ID (pid) des Kamerasensors aus.
         myCAM.wrSensorReg8_8(0xff, 0x01);
         myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
@@ -161,7 +161,8 @@ void loop() {
     myCAM.start_capture();
     Serial.println(F("Start capture."));
     total_time = millis();
-    while ( !myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK));  // Warten bis Bild im FIFO ist
+    while (!myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK)) {}
+    // Warten bis Bild im FIFO ist
     total_time = millis() - total_time;
     Serial.print(F("Capture time used (in ms):"));
     Serial.println(total_time, DEC);
@@ -189,7 +190,7 @@ void loop() {
 // auf einmal in eine Datei auf der SD-Karte geschrieben. Dieser Vorgang wird wiederholt, 
 // bis das gesamte Bild übertragen ist.
 // =======================================================================================
-uint8_t read_fifo_burst(ArduCAM myCAM) {
+uint8_t read_fifo_burst(ArduCAM _myCAM) {
     uint8_t temp = 0, temp_last = 0;
     uint32_t length = 0;
 
@@ -202,7 +203,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM) {
     // Ein Puffer von 256 Bytes im RAM, um Daten zwischenzuspeichern.
     byte buf[256];
 
-    length = myCAM.read_fifo_length();
+    length = _myCAM.read_fifo_length();
     Serial.print(F("FIFO length is: "));
     Serial.println(length, DEC);
     if (length >= MAX_FIFO_SIZE || length == 0) { // > 8M or 0
@@ -210,8 +211,8 @@ uint8_t read_fifo_burst(ArduCAM myCAM) {
         return 0;
     }
     
-    myCAM.CS_LOW();
-    myCAM.set_fifo_burst();
+    _myCAM.CS_LOW();
+    _myCAM.set_fifo_burst();
     i = 0;
 
     while (length--) {
@@ -221,37 +222,36 @@ uint8_t read_fifo_burst(ArduCAM myCAM) {
         // Wenn das Ende des JPEGs (Marker 0xFF 0xD9) gefunden wird...
         if ((temp == 0xD9) && (temp_last == 0xFF)) { 
         buf[i++] = temp;  // Das letzte Byte (0xD9) noch im Puffer speichern
-        myCAM.CS_HIGH(); // SPI-Bus für die Kamera freigeben...
+        _myCAM.CS_HIGH(); // SPI-Bus für die Kamera freigeben...
         outFile.write(buf, i); // ...und den Rest des Puffers auf die SD-Karte schreiben
         outFile.close(); // Datei schließen
         Serial.println(F("Image saved!"));
         is_header = false;
-        myCAM.CS_LOW();
-        myCAM.set_fifo_burst();
+        _myCAM.CS_LOW();
+        _myCAM.set_fifo_burst();
         i = 0;
         break; // Schleife verlassen, da das Bild komplett ist.
         }
 
-        // Wenn wir uns mitten in den Bilddaten befinden...
+        // Wir befinden uns mitten in den Bilddaten...
         if (is_header == true) {
         if (i < 256) {
             buf[i++] = temp; // Puffer füllen
         } else {
             // Puffer ist voll, also auf SD-Karte schreiben
-            myCAM.CS_HIGH(); // SPI-Bus für Kamera freigeben
+            _myCAM.CS_HIGH(); // SPI-Bus für Kamera freigeben
             outFile.write(buf, 256); // 256 Bytes schreiben
-            myCAM.CS_LOW(); // SPI-Bus wieder für Kamera aktivieren
-            myCAM.set_fifo_burst();
+            _myCAM.CS_LOW(); // SPI-Bus wieder für Kamera aktivieren
+            _myCAM.set_fifo_burst();
             i = 0; // Puffer-Index zurücksetzen
-            buf[i++] = temp; // Das aktuelle Byte als erstes ins neue Puffer-Paket legen
+            buf[i++] = temp; // Das aktuelle Byte als Erstes ins neue Puffer-Paket legen
         }
         } 
         
         // Wenn der Anfang des JPEGs (Marker 0xFF 0xD8) gefunden wird...
         else if ((temp == 0xD8) & (temp_last == 0xFF)) {
         is_header = true;
-        myCAM.CS_HIGH();
-        //Create a avi file
+        _myCAM.CS_HIGH();
         k++; // Bildzähler erhöhen
 
         // Dateinamen dynamisch erzeugen (z.B. "/1.jpg", "/2.jpg", ...)
@@ -264,11 +264,11 @@ uint8_t read_fifo_burst(ArduCAM myCAM) {
 
         if (!outFile) {
             Serial.println(F("File open failed"));
-            while (1);
+            while (true);
         }
 
-        myCAM.CS_LOW();
-        myCAM.set_fifo_burst();
+        _myCAM.CS_LOW();
+        _myCAM.set_fifo_burst();
         
         // Die ersten beiden Bytes des JPEGs in den Puffer schreiben
         buf[i++] = temp_last;
@@ -276,7 +276,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM) {
         }
     }
 
-    myCAM.CS_HIGH();
+    _myCAM.CS_HIGH();
     return 1;
 }
 

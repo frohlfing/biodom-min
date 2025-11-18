@@ -22,12 +22,12 @@
 #endif
 
 // --- U8g2 Objekt-Instanziierung ---
-// Displaytyp laut Az-Delivery eBook ausgewählt (siehe https://cdn.shopify.com/s/files/1/1509/1638/files/AZ003_A_1-6_DE_B078J78R45_1.pdf?v=1721030497)
+// Displaytyp laut Az-Delivery E-Book ausgewählt (siehe https://cdn.shopify.com/s/files/1/1509/1638/files/AZ003_A_1-6_DE_B078J78R45_1.pdf?v=1721030497)
 // Erklärung der Parameter:
 // * U8G2_SH1106: Controller-Typ des Displays.
 // * _128X64: Auflösung in Pixel.
 // * _NONAME: Eine generische Variante des Controllers.
-// * _F_: "Full Buffer" Modus. Die Bibliothek reserviert RAM für das gesamte Bild (128*64/8 = 1024 Bytes).
+// * _F_: "Full Buffer" Modus. Die Bibliothek reserviert RAM für das gesamte Bild (128 * 64 / 8 = 1024 Bytes).
 // * _HW_I2C: Verwendet die Hardware-I2C-Schnittstelle des ESP32 (Standardpins GPIO 21/SDA, 22/SCL).
 // * U8G2_R0: Keine Rotation des Bildschirminhalts.
 // * U8X8_PIN_NONE: Kein Reset-Pin wird verwendet.
@@ -106,10 +106,9 @@ void u8g2_triangle(uint8_t a) {
 // Zeigt die ersten 128 ASCII-Zeichen an.
 void u8g2_ascii_1() {
     char s[2] = " ";
-    uint8_t x, y;
     u8g2.drawStr( 0, 0, "ASCII page 1");
-    for( y = 0; y < 6; y++ ) {
-        for( x = 0; x < 16; x++ ) {
+    for( uint8_t y = 0; y < 6; y++ ) {
+        for( uint8_t x = 0; x < 16; x++ ) {
             s[0] = y*16 + x + 32;
             u8g2.drawStr(x*7, y*10+10, s);
         }
@@ -119,10 +118,9 @@ void u8g2_ascii_1() {
 // Zeigt die erweiterten ASCII-Zeichen an.
 void u8g2_ascii_2() {
     char s[2] = " ";
-    uint8_t x, y;
     u8g2.drawStr( 0, 0, "ASCII page 2");
-    for( y = 0; y < 6; y++ ) {
-        for( x = 0; x < 16; x++ ) {
+    for( uint8_t y = 0; y < 6; y++ ) {
+        for( uint8_t x = 0; x < 16; x++ ) {
             s[0] = y*16 + x + 160;
             u8g2.drawStr(x*7, y*10+10, s);
         }
@@ -148,6 +146,8 @@ void u8g2_extra_page(uint8_t a) {
         case 7:
             u8g2.drawUTF8(a*3, 36, "☔");
             break;
+        default:
+            break;
     }
 }
 
@@ -161,17 +161,6 @@ static const unsigned char cross_bits[] U8X8_PROGMEM  = {
     0x01, 0x42, 0x80, 0x06, 0x42, 0x60, 0x38, 0x3C, 0x1C, 0xC0, 0x00, 0x03, 
     0x00, 0x81, 0x00, 0x00, 0x81, 0x00, 0x00, 0x42, 0x00, 0x00, 0x42, 0x00, 
     0x00, 0x42, 0x00, 0x00, 0x24, 0x00, 0x00, 0x24, 0x00, 0x00, 0x18, 0x00, };
-
-// Byte-Array für eine gefüllte Kreuz-Bitmap.
-#define cross_fill_width 24
-#define cross_fill_height 24
-static const unsigned char cross_fill_bits[] U8X8_PROGMEM  = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x18, 0x64, 0x00, 0x26, 
-    0x84, 0x00, 0x21, 0x08, 0x81, 0x10, 0x08, 0x42, 0x10, 0x10, 0x3C, 0x08, 
-    0x20, 0x00, 0x04, 0x40, 0x00, 0x02, 0x80, 0x00, 0x01, 0x80, 0x18, 0x01, 
-    0x80, 0x18, 0x01, 0x80, 0x00, 0x01, 0x40, 0x00, 0x02, 0x20, 0x00, 0x04, 
-    0x10, 0x3C, 0x08, 0x08, 0x42, 0x10, 0x08, 0x81, 0x10, 0x84, 0x00, 0x21, 
-    0x64, 0x00, 0x26, 0x18, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
 
   // Byte-Array für eine blockartige Kreuz-Bitmap.
 #define cross_block_width 14
@@ -203,7 +192,7 @@ void u8g2_bitmap_overlay(uint8_t a) {
 
 // Demo für Bitmap-Zeichenmodi (Black, White, XOR) mit solid/transparent Hintergrund.
 void u8g2_bitmap_modes(uint8_t transparent) {
-    const uint8_t frame_size = 24;
+    constexpr uint8_t frame_size = 24;
 
     u8g2.drawBox(0, frame_size * 0.5, frame_size * 5, frame_size);
     u8g2.drawStr(frame_size * 0.5, 50, "Black");
@@ -245,6 +234,8 @@ void draw(void) {
         case 9: u8g2_bitmap_modes(0); break;
         case 10: u8g2_bitmap_modes(1); break;
         case 11: u8g2_bitmap_overlay(draw_state&7); break;
+        default:
+            break;
     }
 }
 

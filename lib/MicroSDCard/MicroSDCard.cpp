@@ -2,7 +2,7 @@
 
 MicroSDCard::MicroSDCard(const uint8_t csPin) : _csPin(csPin) {}
 
-bool MicroSDCard::begin() {
+bool MicroSDCard::begin() const {
     return SD.begin(_csPin);
 }
 
@@ -49,13 +49,12 @@ bool MicroSDCard::readFile(const char* path, Stream &output) {
     if (!file) {
         return false;
     }
-    
-    const size_t bufferSize = 256;
+
+    constexpr size_t bufferSize = 256;
     uint8_t buffer[bufferSize];
-    size_t bytesRead;
-    
+
     while (file.available()) {
-        bytesRead = file.read(buffer, bufferSize);
+        const size_t bytesRead = file.read(buffer, bufferSize);
         output.write(buffer, bytesRead);
     }
     file.close();
@@ -65,7 +64,7 @@ bool MicroSDCard::readFile(const char* path, Stream &output) {
 String MicroSDCard::readFile(const char* path) {
     File file = SD.open(path, FILE_READ);
     if (!file) {
-        return String(""); // Leerer String bei Fehler
+        return ""; // Leerer String bei Fehler
     }
     String content = file.readString();
     file.close();
@@ -102,7 +101,7 @@ bool MicroSDCard::deleteFile(const char* path) {
 }
 
 String MicroSDCard::getCardType() {
-    uint8_t type = SD.cardType();
+    const uint8_t type = SD.cardType();
     if (type == CARD_MMC) return "MMC";
     if (type == CARD_SD) return "SDSC";
     if (type == CARD_SDHC) return "SDHC";

@@ -14,7 +14,7 @@ bool SensorLDR5528::read() {
     // --- 1. Oversampling zur Rauschreduzierung ---
     // Wir nehmen mehrere Messungen und bilden den Durchschnitt, um einen stabileren Wert zu erhalten.
     uint32_t sum = 0;
-    const uint8_t samples = 5;
+    constexpr uint8_t samples = 5;
     for (uint8_t i = 0; i < samples; ++i) {
         sum += analogRead(_pin);
         delay(5); // Kurze Pause zwischen den Messungen

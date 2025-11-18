@@ -54,6 +54,7 @@ static void clear_error_lines() {
 }
 
 // ==================== Test-Muster (schnelle Validierung) ====================
+// ReSharper disable once CppDFAUnreachableFunctionCall
 static void render_test_pattern() {
     memset(xbm_buffer, 0, sizeof(xbm_buffer)); // 0 = white (keine schwarzen Pixel)
     // horizontaler Strich in der Mitte
@@ -65,7 +66,7 @@ static void render_test_pattern() {
 
 // ==================== TJpg_Decoder Render-Callback ====================
 // Signatur für Bodmers TJpg_Decoder: void callback(uint16_t *pPixels, int x, int y, int w, int h)
-void jpgRender(uint16_t *pPixels, int x, int y, int w, int h) {
+void jpgRender(const uint16_t *pPixels, const int x, const int y, const int w, const int h) {
     // Clip-Blöcke, die komplett außerhalb liegen
     if (y >= XBM_HEIGHT || x >= XBM_WIDTH) return;
 
@@ -118,7 +119,8 @@ void jpgRender(uint16_t *pPixels, int x, int y, int w, int h) {
                 if (ty + 1 < XBM_HEIGHT) nxt[idx] += (e * 5) / 16;
                 // bottom-right
                 if (ty + 1 < XBM_HEIGHT && tx + 1 < XBM_WIDTH) nxt[(tx + 1) + 1] += (e * 1) / 16;
-            } else {
+            }
+            else { // ReSharper disable once CppDFAUnreachableCode
                 // simples Thresholding
                 out = (corrected < 128) ? 0 : 255;
             }
@@ -146,6 +148,7 @@ void setup() {
     clear_error_lines();
 
     if (USE_TEST_PATTERN) {
+        // ReSharper disable once CppDFAUnreachableCode
         Serial.println("Modus: TEST PATTERN");
         render_test_pattern();
     } else {
@@ -171,13 +174,13 @@ void setup() {
         u8g2.drawBox(0, 0, XBM_WIDTH, XBM_HEIGHT);
         u8g2.setDrawColor(0);           // DrawColor 0 = pixel OFF (black) -> wir "löschen" weiße Pixel dort, wo 1 im XBM steht
     } else {
+        // ReSharper disable once CppDFAUnreachableCode
         // normale Anzeige: schwarzer Hintergrund, weiße Pixel für '1' -> invertiere beim draw.
         u8g2.setDrawColor(0);
         u8g2.drawBox(0, 0, XBM_WIDTH, XBM_HEIGHT); // fill black
         u8g2.setDrawColor(1); // white for bits
     }
 
-    // u8g2.drawXBMP erwartet 1=black? U8g2's drawXBMP expects XBM format where 1 bits are black pixels.
     // Wir haben xbm_buffer so aufgebaut, dass 1 == black, also wir können drawXBMP direkt verwenden.
     u8g2.drawXBMP(0, 0, XBM_WIDTH, XBM_HEIGHT, xbm_buffer);
     u8g2.sendBuffer();

@@ -4,7 +4,7 @@ Funktionstest für den berührungslosen Füllstandsensor XKC-Y25-NPN
 
 #include <Arduino.h>
 
-const int sensorPin = 35; // Sensor Output Pin
+constexpr int sensorPin = 35; // Sensor Output Pin
 
 int sensorValue = 0;
 

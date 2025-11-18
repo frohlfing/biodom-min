@@ -25,7 +25,7 @@ public:
     /** Schaltet die LED dauerhaft aus. */
     void off();
 
-    /** Schaltet die LED um (ein -> aus, aus -> ein). */
+    /** Schaltet die LED um. */
     void toggle();
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Funktionstest für den SD Kartenleser (MicroSD SPI Module)
+ * Funktionstest für den SD-Kartenleser (MicroSD SPI Module)
  * 
  * Basierend auf dem offiziellen Beispiel der ESP32 Arduino Core SD-Bibliothek:
  * https://github.com/espressif/arduino-esp32/tree/master/libraries/SD/examples/SD_Test
@@ -159,12 +159,11 @@ void deleteFile(fs::FS &fs, const char *path) {
 void testFileIO(fs::FS &fs, const char *path) {
     File file = fs.open(path);
     static uint8_t buf[512];
-    size_t len = 0;
-    uint32_t start = millis();
-    uint32_t end = start;
+    uint32_t start, end;
     if (file) {
+        size_t len = 0;
         len = file.size();
-        size_t flen = len;
+        const size_t flen = len;
         start = millis();
         while (len) {
             size_t toRead = len;
@@ -175,7 +174,7 @@ void testFileIO(fs::FS &fs, const char *path) {
             len -= toRead;
         }
         end = millis() - start;
-        Serial.printf("%u bytes read for %lu ms\n", flen, end);
+        Serial.printf("%u bytes read for %u ms\n", flen, end);
         file.close();
     } else {
         Serial.println("Failed to open file for reading");
@@ -187,13 +186,12 @@ void testFileIO(fs::FS &fs, const char *path) {
         return;
     }
 
-    size_t i;
     start = millis();
-    for (i = 0; i < 2048; i++) {
+    for (size_t i = 0; i < 2048; i++) {
         file.write(buf, 512);
     }
     end = millis() - start;
-    Serial.printf("%u bytes written for %lu ms\n", 2048 * 512, end);
+    Serial.printf("%u bytes written for %u ms\n", 2048 * 512, end);
     file.close();
 }
 

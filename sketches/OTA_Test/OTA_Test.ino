@@ -21,10 +21,10 @@ void setup() {
 
     // 1. Mit dem WLAN verbinden
     Serial.print("Verbinde mit WLAN...");
-    WiFi.mode(WIFI_STA); // Station Mode (Client)
-    WiFi.setHostname(HOSTNAME);  
+    WiFiClass::mode(WIFI_STA); // Station Mode (Client)
+    WiFiClass::setHostname(HOSTNAME);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFiClass::status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
     }
@@ -32,7 +32,7 @@ void setup() {
     Serial.print("IP-Adresse: ");
     Serial.println(WiFi.localIP());
     Serial.print("Host: ");
-    Serial.println(WiFi.getHostname());
+    Serial.println(WiFiClass::getHostname());
 
     // 2. OTA-Dienst starten
     ArduinoOTA.setHostname(HOSTNAME);

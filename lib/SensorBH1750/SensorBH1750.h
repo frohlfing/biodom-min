@@ -10,10 +10,9 @@ class SensorBH1750 {
 public:
     /**
      * @brief Konstruktor.
-     * @param address I2C-Adresse des Sensors (Standard: 0x23).
-     * @param wire Pointer auf TwoWire-Instanz (Default: &Wire).
+     * @param address I2C-Adresse des Sensors: 0x23 (Standard) oder 0x5C.
      */
-    explicit SensorBH1750(uint8_t address = 0x23, TwoWire* wire = &Wire);
+    explicit SensorBH1750(uint8_t address = 0x23);
 
     /**
      * @brief Initialisiert das I2C-Interface und den BH1750-Treiber.
@@ -58,8 +57,6 @@ public:
     void setMode(BH1750::Mode mode);
 
 private:
-    TwoWire* _wire;     // Pointer auf die I2C-Schnittstelle (z.B. &Wire), ermöglicht flexible Nutzung von I2C0/I2C1.
-    uint8_t _addr;      // Die I2C-Adresse des Sensors (z.B. 0x23).
     BH1750 _drv;        // Die Instanz der zugrundeliegenden Bibliothek.
     float _lux;         // Speichert den zuletzt erfolgreich gemessenen Lichtwert in Lux.
     int _lastError;     // Speichert den Fehlercode der letzten Operation (0 = OK).

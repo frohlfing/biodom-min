@@ -4,8 +4,8 @@
 
 #include <Arduino.h>
 
-const int valWater = 1100;
-const int valAir = 2500;
+constexpr int valWater = 1100;
+constexpr int valAir = 2500;
 
 void setup() {
     Serial.begin(115200);

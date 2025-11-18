@@ -68,7 +68,7 @@ private:
     uint8_t _pin;   // Analogpin
     int _dry;       // Rohwert dry (trocken)
     int _wet;       // Rohwert wet (nass)
-    int _raw;       // letzter Messert (Rohwert)
-    int _percent;   // letzter Messert in Prozent
+    int _raw;       // letzter Messwert (Rohwert)
+    int _percent;   // letzter Messwert in Prozent
     int _lastError; // Fehlercode
 };

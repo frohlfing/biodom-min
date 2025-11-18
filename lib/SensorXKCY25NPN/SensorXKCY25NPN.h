@@ -38,13 +38,13 @@ public:
      * @brief Gibt den letzten Fehlercode zurück.
      * @return Fehlercode (immer 0, da keine Fehler erkannt werden können).
      */
-    int getLastError() const;
+    static int getLastError();
 
     /**
      * @brief Gibt eine Beschreibung des letzten Fehlers zurück.
      * @return Fehlerbeschreibung.
      */
-    const char* getErrorMessage() const;
+    static const char* getErrorMessage();
 
 private:
     uint8_t _pin;               // Der GPIO-Pin, an dem der Sensor angeschlossen ist.

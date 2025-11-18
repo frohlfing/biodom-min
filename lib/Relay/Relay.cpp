@@ -76,7 +76,7 @@ uint8_t Relay::pin() const {
      return _pin;
 }
 
-void Relay::writePin(bool logicalOn) {
+void Relay::writePin(const bool logicalOn) const {
     // Mappe logisches "ON" auf physikalischen Pegel je nach activeHigh
     if (_activeHigh) {
         digitalWrite(_pin, logicalOn ? HIGH : LOW);

@@ -27,7 +27,7 @@ Für stabilere Messwerte in verrauschten Umgebungen erhöhe die Anzahl der Sampl
 
 ## 📐 Kalibrierung
 
-Die Umrechnung Widerstand -> Lux ist nur ein Näherungsmodell. Für präzise Messungen kalibriere mit einem Referenz-Luxmeter und passe die Parameter `a` und `b` in `resistanceToLux()` an.
+Die Umrechnung Widerstand zu Lux ist nur ein Näherungsmodell. Für präzise Messungen kalibriere mit einem Referenz-Luxmeter und passe die Parameter `a` und `b` in `resistanceToLux()` an.
 
 ## 📜 Lizenz
 

@@ -3,17 +3,7 @@
 #include <Arduino.h>
 
 /**
- * Relay
- *
- * Treiber für ein (einzelnes) Relaismodul.
- * - Unterstützt aktive-High / aktive-Low Relais-Module
- * - Nicht-blockierende Pulse (pulse(duration_ms))
- * - update() muss regelmäßig in loop() aufgerufen werden
- *
- * Sicherheitshinweis:
- * - Dieses Modul schaltet möglicherweise Netzspannung oder hohe Ströme.
- *   Sorge für geeignete Schutzmaßnahmen (Sicherungen, Freilaufdioden bei induktiven Lasten,
- *   Entkopplung, geeignete Abstände/Isolierung).
+ * Klasse für ein (einzelnes) Relaismodul.
  */
 class Relay {
 public:
@@ -21,7 +11,7 @@ public:
    * Konstruktor
    * @param pin GPIO-Pin, der das Relais steuert (z. B. INx auf einem Relaisboard)
    * @param activeHigh true: HIGH schaltet Relais EIN; false: LOW schaltet Relais EIN (invertierte Module)
-   * @param safeState false: Relais standardmäßig AUS; true: Relais standardmäßig EIN (Sicherheits-Default: AUS)
+   * @param safeState false: Relais standardmäßig AUS; true: Relais standardmäßig EIN (Default: AUS)
    */
   explicit Relay(uint8_t pin, bool activeHigh = false, bool safeState = false);
 
@@ -45,7 +35,7 @@ public:
   void pulse(unsigned long durationMs);
 
   /**
-   * Muss regelmäßig in loop() ausgeführt werden, um Pulse/Timeouts zu verwalten.
+   * Muss regelmäßig in loop() ausgeführt werden.
    * Sollte sehr kurz und nicht-blockierend sein.
    */
   void update();
@@ -64,5 +54,5 @@ private:
   unsigned long _pulseStart; // millis() Startzeit des Pulses
   unsigned long _pulseDur;   // Dauer des Pulses in ms
   bool _safeState;           // Default-Zustand nach reset/begin
-  void writePin(bool logicalOn);
+  void writePin(bool logicalOn) const;
 };

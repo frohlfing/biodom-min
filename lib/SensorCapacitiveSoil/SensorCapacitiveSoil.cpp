@@ -19,11 +19,11 @@ bool SensorCapacitiveSoil::read() {
     }
 
     // analogRead Rückgabewerte können je nach Plattform variieren (0..4095 auf ESP32)
-    int temp = analogRead(_pin);
+    const int temp = analogRead(_pin);
 
     // Liegt der Messwert im erwarteten Bereich? 
     // Falls der Sensor nicht angeschlossen ist, hängt der analoge Pin in der Luft und liefert zufällige Werte (wirkt wie eine Antenne).
-    int tolerance = (_dry - _wet) * 0.25f; // 25% Toleranz
+    const int tolerance = static_cast<int>(static_cast<float>(_dry - _wet) * 0.25f); // 25 % Toleranz
     if (temp < _wet - tolerance || temp > _dry + tolerance) {
         _raw = -1;
         _percent = -1;
@@ -35,7 +35,7 @@ bool SensorCapacitiveSoil::read() {
     _raw = temp;
 
     // Rohwert auf Prozent umrechnen.
-    int percent = map(temp, _dry, _wet, 0, 100); //  Wandelt den analogen Messwert (temp) linear in einen Prozentwert um.
+    const int percent = map(temp, _dry, _wet, 0, 100); //  Wandelt den analogen Messwert (temp) linear in einen Prozentwert um.
     _percent = constrain(percent, 0, 100); // Stellt sicher, dass der berechnete Prozentwert immer im gültigen Bereich von 0 bis 100 liegt.
 
     _lastError = 0;

@@ -34,11 +34,11 @@ void setup() {
     // Um das zu korrigieren, erstellen wir zuerst eine weiße Leinwand und "stanzen" dann die schwarzen Pixel aus.
     u8g2.setDrawColor(1);        // 1. Zeichenfarbe auf weiß (Pixel AN) setzen.
     u8g2.drawBox(0, 0, 128, 64); // 2. Eine gefüllte Box über den gesamten Bildschirm zeichnen, um den Hintergrund weiß zu machen.
-    u8g2.setDrawColor(0);        // 3. Zeichenfarbe auf schwarz (Pixel AUS) setzen. Jede '1' in den Daten "löscht" nun einen Pixel und macht ihn schwarz.
+    u8g2.setDrawColor(0);        // 3. Zeichenfarbe auf schwarz (Pixel AUS) setzen. Jede '1' in den Daten "löscht" nun ein Pixel und macht ihn schwarz.
 
     // --- Der Kern dieses Tests ---
     // Zeichne das konvertierte Portrait in den Puffer.
-    // Da das Bild bereits 128x64 Pixel groß ist, zeichnen ich es an der Ecke (0,0).
+    // Da das Bild bereits 128x64 Pixel groß ist, zeichne ich es an der Ecke (0,0).
     u8g2.drawXBMP(0, 0, 128, 64, frank_128x64_xbm);
     
     // Den Puffer-Inhalt an das Display senden, um ihn sichtbar zu machen

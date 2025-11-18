@@ -5,8 +5,8 @@
 
 // Im Original-Sketch sollte man die ArduCAM-Bibliothek für die Hardware anpassen, indem man in memorysaver.h das Kameramodell einkommentiert. 
 // Das ist uncool, ich definiere hier direkt die Hardware und lasse die Hersteller-Bibliothek unangetastet.
-#include "memorysaver.h" // nicht aufrufen, hat ja nicht die richtige Kamera definiert
-#define _MEMORYSAVER_ // Verhindert, dass memorysaver.h die Kamera-Konfiguration ändert.
+//#include "memorysaver.h" // nicht aufrufen, hat ja nicht die richtige Kamera definiert
+#define _MEMORYSAVER_ // Verhindert, dass memorysaver.h die Kamera-Konfiguration ändert. NOLINT(*-reserved-identifier)
 #define OV2640_MINI_2MP_PLUS // Definiert das Kameramodell als OV2640 Mini 2MP Plus
 #include <ArduCAM.h>  // Die Hauptbibliothek für die Steuerung der ArduCAM-Hardware.
 
@@ -84,8 +84,7 @@ public:
     /**
      * @enum SpecialEffect
      * @brief Definiert die verfügbaren Spezialeffekte.
-     * @note Die Namen sind mit 'EFFECT_' geprefixt, um Namenskonflikte mit den
-     *       #defines der ArduCAM.h (z.B. BW) zu vermeiden.
+     * @note Die Namen sind mit dem Prefix 'EFFECT_' versehen, um Namenskonflikte mit der ArduCAM.h (z.B. BW) zu vermeiden.
      */
     enum SpecialEffect { 
         EFFECT_NORMAL,      // Normaler Modus ohne Effekt
@@ -103,7 +102,7 @@ public:
      * @brief Konstruktor der Kamera-Klasse.
      * @param csPin Der GPIO-Pin, der als Chip Select für die ArduCAM verwendet wird.
      */
-    ArduCamMini2MPPlusOV2640(const uint8_t csPin);
+    explicit ArduCamMini2MPPlusOV2640(uint8_t csPin);
 
     /**
      * @brief Initialisiert die Kamera-Hardware und die SPI/I2C-Kommunikation.

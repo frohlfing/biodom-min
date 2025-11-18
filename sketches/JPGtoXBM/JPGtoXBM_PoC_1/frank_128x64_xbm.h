@@ -1,9 +1,10 @@
 #pragma once
+#include <Arduino.h>
 
 /**
  * Mein Portrait aus docs/assets/frank_128x64.jpg im XBM-Format.
  * 
- * Diese Headerdatei ist eine Kopie aus dem include-Verzeichnis,
+ * Diese Header-Datei ist eine Kopie aus dem include-Verzeichnis,
  * damit die Arduino IDE diese einbinden kann.
  */ 
 

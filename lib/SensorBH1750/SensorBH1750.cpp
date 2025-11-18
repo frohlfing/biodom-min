@@ -1,9 +1,7 @@
 #include "SensorBH1750.h"
 
-SensorBH1750::SensorBH1750(uint8_t address, TwoWire* wire)
-    : _wire(wire),
-      _addr(address),
-      _drv(BH1750(address)),
+SensorBH1750::SensorBH1750(const uint8_t address)
+    : _drv(BH1750(address)),
       _lux(NAN),
       _lastError(0),
       _mode(BH1750::CONTINUOUS_HIGH_RES_MODE) {}

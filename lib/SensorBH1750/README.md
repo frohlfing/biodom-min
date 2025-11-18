@@ -2,7 +2,7 @@
 
 Diese Bibliothek kapselt die Nutzung des Lichtsensors GY-302 BH1750. 
 
-BH1750 ist der eigentliche Chips des Sensors, GY-302 bezeichnet das eingesetzte Modul.
+BH1750 ist der eigentliche Chip des Sensors, GY-302 bezeichnet das eingesetzte Modul.
 
 ## 📦 Installation
 

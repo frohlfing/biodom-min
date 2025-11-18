@@ -26,8 +26,8 @@
 // Ein BMP-Bild benötigt einen Header mit Informationen über Größe, Farbtiefe etc.
 // Dieser Header wird vor den eigentlichen Pixeldaten gesendet, wenn ein BMP-Bild angefordert wird.
 // PROGMEM speichert dieses große Array im Flash-Speicher statt im RAM, um RAM zu sparen.
-#define BMPIMAGEOFFSET 66
-const char bmp_header[BMPIMAGEOFFSET] PROGMEM = {
+#define IMAGE_OFFSET 66
+static const unsigned char bmpHeader[IMAGE_OFFSET] PROGMEM  = {
   0x42, 0x4D, 0x36, 0x58, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x42, 0x00, 0x00, 0x00, 0x28, 0x00,
   0x00, 0x00, 0x40, 0x01, 0x00, 0x00, 0xF0, 0x00, 0x00, 0x00, 0x01, 0x00, 0x10, 0x00, 0x03, 0x00,
   0x00, 0x00, 0x00, 0x58, 0x02, 0x00, 0xC4, 0x0E, 0x00, 0x00, 0xC4, 0x0E, 0x00, 0x00, 0x00, 0x00,
@@ -35,7 +35,7 @@ const char bmp_header[BMPIMAGEOFFSET] PROGMEM = {
   0x00, 0x00 };
 
 // --- Globale Variablen ---
-const int CS = 17;  		//  GPIO17 des ESP32 als Chip Select Pin für die ArduCAM verwenden
+constexpr int CS = 17;  		//  GPIO17 des ESP32 als Chip Select Pin für die ArduCAM verwenden
 
 bool is_header = false; 	// Hilfsvariable für den Streaming-Modus, um den Anfang eines JPEGs zu finden.
 int mode = 0; 				// Steuert den aktuellen Betriebsmodus (z.B. Einzelbild, Video).
@@ -46,8 +46,8 @@ uint8_t start_capture = 0; 	// Flag, das eine neue Aufnahme auslöst.
 // Wir übergeben das Kameramodell (OV2640) und den CS-Pin.
 ArduCAM myCAM(OV2640, CS);
 
-// Funktions-Prototyp. Deklariert die Funktion, damit sie vor ihrer Definition aufgerufen werden kann.
-uint8_t read_fifo_burst(ArduCAM myCAM);
+// Prototyp. Deklariert die Funktion, damit sie vor ihrer Definition aufgerufen werden kann.
+uint8_t read_fifo_burst(ArduCAM _myCAM);
 
 // =======================================================================================
 // SETUP-Funktion: Wird einmal beim Start des Mikrocontrollers ausgeführt
@@ -82,7 +82,7 @@ void setup() {
 	delay(100);
 
 	// 2. SPI-Verbindung zur ArduCAM testen 
-	while (1) {
+	while (true) {
 		// Schreibe einen bekannten Wert (0x55) in ein Testregister und lese ihn sofort wieder aus.
 		myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
 		temp = myCAM.read_reg(ARDUCHIP_TEST1);
@@ -98,7 +98,7 @@ void setup() {
 	}
 
 	// 3. Kamerasensor-Modell überprüfen
-	while (1) {
+	while (true) {
 		// Lese die Hersteller-ID (vid) und Produkt-ID (pid) des Kamerasensors aus.
 		myCAM.wrSensorReg8_8(0xff, 0x01);
 		myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
@@ -131,8 +131,7 @@ void setup() {
 // LOOP-Funktion
 // =======================================================================================
 void loop() {	
-	uint8_t temp = 0xff, temp_last = 0;
-	bool is_header = false;
+	uint8_t temp;
 
 	// --- Empfangen von Befehlen über die serielle Schnittstelle ---
 	if (Serial.available())	{
@@ -318,8 +317,10 @@ void loop() {
 			case 0x87:	// Spezialeffekt: Normal
 				myCAM.OV2640_set_Special_effects(Normal);
 				Serial.println(F("ACK CMD Set to Normal"));
-				break;     
-		}
+				break;
+			default:
+	  			break;
+	    }
 	}
 
 	// --- Zustandsmaschine basierend auf der 'mode'-Variable ---
@@ -346,9 +347,10 @@ void loop() {
 	}
 
 	// Modus 2: Video-Streaming (kontinuierliche JPEG-Aufnahmen)
-	else if (mode == 2)
-	{
-		while (1) { // Eine innere Endlosschleife für das Streaming
+	else if (mode == 2) {
+		bool isHeader = false;
+		uint8_t tempLast = 0;
+		while (true) { // Eine innere Endlosschleife für das Streaming
 			// Prüfe, ob ein Befehl zum Stoppen (0x21) oder ein anderer Einstellungsbefehl kommt.
 			temp = Serial.read();
 			if (temp == 0x21) {
@@ -359,8 +361,7 @@ void loop() {
 			}
 			
 			// Hier ist der gleiche Switch-Block wie oben, um Einstellungen während des Streamings zu ändern.
-			switch (temp)
-			{
+			switch (temp) {
 				case 0x40:
 					myCAM.OV2640_set_Light_Mode(Auto);
 					Serial.println(F("ACK CMD Set to Auto"));
@@ -472,7 +473,9 @@ void loop() {
 				case 0x87:
 					myCAM.OV2640_set_Special_effects(Normal);
 					Serial.println(F("ACK CMD Set to Normal"));
-					break;     
+					break;
+				default:
+					break;
 			}
 
 			// Logik für die kontinuierliche Aufnahme
@@ -498,20 +501,20 @@ void loop() {
 				temp =  SPI.transfer(0x00); // Lese erstes Byte
 				length --;
 				while (length--) {
-					temp_last = temp;
+					tempLast = temp;
 					temp =  SPI.transfer(0x00);  // Lese nächstes Byte
-					if (is_header) {
+					if (isHeader) {
 						Serial.write(temp); // Sende das Byte, wenn wir mitten im Bild sind
 					}
 					// Suche nach dem JPEG Start-Marker (0xFF 0xD8)
-					else if ((temp == 0xD8) & (temp_last == 0xFF)) {
-						is_header = true;
+					else if ((temp == 0xD8) & (tempLast == 0xFF)) {
+						isHeader = true;
 						Serial.println(F("ACK IMG")); // Signal an den Host: Bilddaten beginnen jetzt
-						Serial.write(temp_last);
+						Serial.write(tempLast);
 						Serial.write(temp);
 					}
 					// Suche nach dem JPEG End-Marker (0xFF 0xD9)
-					if ((temp == 0xD9) && (temp_last == 0xFF)) {
+					if ((temp == 0xD9) && (tempLast == 0xFF)) {
 						break; // Beende das Senden für dieses Bild
 					}
 					delayMicroseconds(15);
@@ -519,7 +522,7 @@ void loop() {
 				myCAM.CS_HIGH(); // SPI-Kommunikation beenden
 				myCAM.clear_fifo_flag();
 				start_capture = 2; // Trigger für das nächste Bild in der Videosequenz
-				is_header = false;
+				isHeader = false;
 			}
 		}
 	}
@@ -555,15 +558,15 @@ void loop() {
 			Serial.write(0xAA);
 
       		// 2. Sende den vordefinierten BMP-Header
-			for (temp = 0; temp < BMPIMAGEOFFSET; temp++) {
-				Serial.write(pgm_read_byte(&bmp_header[temp]));
+			for (temp = 0; temp < IMAGE_OFFSET; temp++) {
+				Serial.write(pgm_read_byte(&bmpHeader[temp]));
 			}
 
 			// 3. Lese die rohen Pixeldaten aus dem FIFO und sende sie.
       		// Die Kamera liefert RGB565-Daten (2 Bytes pro Pixel).
       		// BMP erwartet aber BGR. Die Reihenfolge der Bytes ist hier wichtig.
 			for (int i = 0; i < 240; i++) { // Für jede Zeile
-				for (int j = 0; j < 320; j++) { // Für jeden Pixel in der Zeile
+				for (int j = 0; j < 320; j++) { // Für jedes Pixel in der Zeile
 					uint8_t VH = SPI.transfer(0x00); // Lese High-Byte des Pixels
 					uint8_t VL = SPI.transfer(0x00); // Lese Low-Byte des Pixels
 					Serial.write(VL); // Sende zuerst Low-Byte
@@ -592,11 +595,11 @@ void loop() {
 // Die Funktion liest jedes einzelne Byte aus dem Kamera-FIFO-Puffer und sendet es sofort 
 // über Serial.write() an den PC. Es findet keine Speicherung im RAM des ESP32 statt.
 // =======================================================================================
-uint8_t read_fifo_burst(ArduCAM myCAM) {
+uint8_t read_fifo_burst(ArduCAM _myCAM) {
 	uint8_t temp = 0, temp_last = 0;
 
 	// 1. Lese die Gesamtgröße der Daten im FIFO.
-	uint32_t length = myCAM.read_fifo_length();
+	uint32_t length = _myCAM.read_fifo_length();
 	Serial.println(length, DEC); // Sende die Größe als Text an den PC.
 
 	// 2. Prüfe auf ungültige Größen.
@@ -606,8 +609,8 @@ uint8_t read_fifo_burst(ArduCAM myCAM) {
   	}
 	
 	// 3. Beginne die SPI-Kommunikation.
-	myCAM.CS_LOW();
-	myCAM.set_fifo_burst();
+	_myCAM.CS_LOW();
+	_myCAM.set_fifo_burst();
 
 	// 4. Lese und sende die Daten Byte für Byte.
   	// Diese Logik ist fast identisch zum Video-Streaming-Teil.
@@ -631,7 +634,7 @@ uint8_t read_fifo_burst(ArduCAM myCAM) {
 	}
 
 	// 5. Beende die SPI-Kommunikation.
-	myCAM.CS_HIGH();
+	_myCAM.CS_HIGH();
 	is_header = false; // Zurücksetzen für das nächste Bild
 	return 1;
 }

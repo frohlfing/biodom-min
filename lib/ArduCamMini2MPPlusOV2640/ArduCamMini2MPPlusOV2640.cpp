@@ -73,8 +73,8 @@ bool ArduCamMini2MPPlusOV2640::captureAndStreamTo(ImageSize size, Stream &destin
     _myCAM.start_capture();
 
     // 3. Warten, bis die Aufnahme abgeschlossen ist
-    while (!_myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK));
-    
+    while (!_myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK)) {}
+
     // 4. Daten aus dem FIFO lesen und in den Ziel-Stream schreiben
     bool success = readFifoToStream(destination);
 
@@ -135,6 +135,8 @@ void ArduCamMini2MPPlusOV2640::setSpecialEffect(SpecialEffect effect) {
         case EFFECT_BW:          _myCAM.OV2640_set_Special_effects(BW);          break;
         case EFFECT_NEGATIVE:    _myCAM.OV2640_set_Special_effects(Negative);    break;
         case EFFECT_BW_NEGATIVE: _myCAM.OV2640_set_Special_effects(BWnegative);  break;
+        default:
+            break;
     }
 }
 
@@ -147,7 +149,7 @@ bool ArduCamMini2MPPlusOV2640::readFifoToStream(Stream &destination)
     
     // Wir verwenden eine Puffergröße, die ein Vielfaches der Sektorgröße von SD-Karten (512 Bytes) ist.
     // Dies kann die Schreibleistung auf SD-Karten erheblich verbessern. 4096 ist ein guter Kompromiss.
-    const size_t bufferSize = 4096;
+    constexpr size_t bufferSize = 4096;
     uint8_t buffer[bufferSize];
     size_t i = 0; // Index für den Puffer
 

@@ -53,6 +53,19 @@ constexpr int SOIL_MOISTURE_ADC_DRY = 2500; // ADC-Wert, wenn der Sensor in der 
 constexpr int SOIL_MOISTURE_ADC_WET = 1100; // ADC-Wert, wenn der Sensor in Wasser getaucht ist (komplett nass)
 
 // ------------------------------------------------------------
+// Intervalle
+// ------------------------------------------------------------
+
+// Sensoren lesen
+constexpr unsigned long SENSOR_READ_INTERVAL = 5000;    // alle 5 Sekunden (in ms)
+
+// Display aktualisieren
+constexpr unsigned long DISPLAY_UPDATE_INTERVAL = 1000; // jede Sekunde (in ms)
+
+// Kamera auslösen
+constexpr unsigned long CAMERA_CAPTURE_INTERVAL = 3600000; // alle 60 Minuten (in ms)
+
+// ------------------------------------------------------------
 // Steuerungsparameter
 // ------------------------------------------------------------
 
@@ -80,7 +93,7 @@ constexpr float LIGHT_LUX_THRESHOLD_DARK   = 5.0f;  // Lux-Wert: ist das Tagesli
 constexpr float LIGHT_LUX_THRESHOLD_BRIGHT = 15.0f; // Lux-Wert: ist das Tageslicht heller, bleiben beide Lampen aus
 
 // Laufzeit des Lüfters (A4)
-constexpr unsigned long FAN_COOLDOWN_DURATION_MS = 300000;  // in ms (Empfehlung: 5 Minuten)
+constexpr unsigned long FAN_COOLDOWN_DURATION_MS = 300000;  // 5 Minuten (in ms)
 
 // Dauer der Bewässerung (A5)
-constexpr unsigned long WATERING_DURATION_MS = 5000; // in ms (Empfehlung: 5 Sekunden)
+constexpr unsigned long WATERING_DURATION_MS = 5000; // 5 Sekunden (in ms)

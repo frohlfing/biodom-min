@@ -68,6 +68,9 @@ void loop() {
             case 2: // Alert-Modus initialisieren
                 display.showFullscreenAlert("ALARM!", true);
                 break;
+
+            default: ;
+                break;
         }
     }
 

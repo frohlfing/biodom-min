@@ -1,8 +1,9 @@
 #include "SensorDS18B20.h"
 
 SensorDS18B20::SensorDS18B20(uint8_t pin)
-    : _oneWire(pin), _sensor(&_oneWire), _temperature(NAN), _lastError(0) {}
-    
+    : _oneWire(pin), _sensor(&_oneWire), _addr{}, _temperature(NAN), _lastError(0) {
+}
+
 bool SensorDS18B20::begin() {
     // DallasTemperature-Bibliothek starten
     _sensor.begin();

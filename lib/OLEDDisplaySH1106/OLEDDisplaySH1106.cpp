@@ -1,8 +1,7 @@
 #include "OLEDDisplaySH1106.h"
 
 OLEDDisplaySH1106::OLEDDisplaySH1106(const uint8_t resetPin)
-    : _u8g2(U8G2_R0, resetPin)
-{
+    : _u8g2(U8G2_R0, resetPin), _dashboardIconWidth{}, _dashboardIconHeight{} {
 }
 
 bool OLEDDisplaySH1106::begin() {
@@ -57,7 +56,7 @@ void OLEDDisplaySH1106::_drawLog() {
     _u8g2.setFontPosTop();
 
     // Bestimme, welche Zeilen gezeichnet werden sollen
-    int startLine = max(0, _logLineCount - (int)LOG_VISIBLE_LINES);
+    int startLine = max(0, _logLineCount - static_cast<int>(LOG_VISIBLE_LINES));
     
     for (int i = 0; i < LOG_VISIBLE_LINES; i++) {
         if (startLine + i < _logLineCount) {
@@ -92,10 +91,9 @@ void OLEDDisplaySH1106::_drawDashboard() {
     _u8g2.drawLine(0, 32, 127, 32); // Horizontal
 
     // Quadranten zeichnen
-    int quadrantWidth = 64;
-    int quadrantHeight = 32;
-
     for (int q = 0; q < 4; q++) {
+        int quadrantWidth = 64;
+        int quadrantHeight = 32;
         int x_offset = (q % 2) * quadrantWidth;
         int y_offset = (q / 2) * quadrantHeight;
 
@@ -158,9 +156,9 @@ void OLEDDisplaySH1106::showFullscreenXBM(uint8_t width, uint8_t height, const u
         // Standardverhalten!
         _u8g2.setDrawColor(1);
     } else {
-        _u8g2.setDrawColor(1); // Farbe auf weiß
+        _u8g2.setDrawColor(1); // Farbe auf Weiß
         _u8g2.drawBox(0, 0, 128, 64); // Weiße Leinwand
-        _u8g2.setDrawColor(0); // Farbe auf schwarz
+        _u8g2.setDrawColor(0); // Farbe auf Schwarz
     }
 
     _u8g2.drawXBMP(0, 0, width, height, xbm);

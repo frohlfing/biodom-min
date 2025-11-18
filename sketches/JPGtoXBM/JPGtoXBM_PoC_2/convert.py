@@ -5,8 +5,8 @@
 import os
 
 # --- Konfiguration ---
-INPUT_FILENAME = "/users/frank/Source/PlatformIO/biodom-mini/sketches/JPGtoXBM/JPGtoXBM_PoC_2/frank_128x64_clean.jpg"
-OUTPUT_FILENAME = "/users/frank/Source/PlatformIO/biodom-mini/sketches/JPGtoXBM/JPGtoXBM_PoC_2/frank_128x64_clean_jpg.h" 
+INPUT_FILENAME = "/users/frank/Source/CLion/biodom-mini/sketches/JPGtoXBM/JPGtoXBM_PoC_2/frank_128x64_clean.jpg"
+OUTPUT_FILENAME = "/users/frank/Source/CLion/biodom-mini/sketches/JPGtoXBM/JPGtoXBM_PoC_2/frank_128x64_clean_jpg.h"
 ARRAY_NAME = "image_jpg"
 
 try:

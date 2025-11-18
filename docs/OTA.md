@@ -1,47 +1,38 @@
 # OTA (Over-The-Air)
 
-OTA ermöglicht das Hochladen des Codes über WLAN. 
+OTA ermöglicht das Hochladen des Codes über WLAN.
 
 ## 📦 Installation & Konfiguration
 
 Für ein OTA-Update müssen folgende Angaben in die `platformio.ini` eingetragen werden:
 
 ```ini
+[platformio]
+extra_configs = secrets.ini
+
 [env:esp32-ova]
 ; ...
 upload_protocol = espota
-upload_port = biodom-mini-dev.local
-upload_flags = --auth=${sysenv.OTA_PASSWORD}
+upload_port = biodom-mini-dev
+upload_flags = --auth=${common.ota_password}
 
 ```
-Der `upload_port` ist die mDNS-Adresse (Hostname + Suffix ".local") oder IP-Adresse. 
-
-In `upload_flags` wird das Passwort angegeben - am besten indirekt über die Umgebungsvariable `OTA_PASSWORD`, damit es nicht in der Datei steht und vom Git-Repository ausgeschlossen werden muss!
-
-In VS Code unter Einstellungen/Arbeitsbereich/Features/Terminal können Umgebungsvariablen definiert werden.
-Dabei wird `workspace.json` im `AppData`-Ordner des Benutzers geöffnet, in der folgender Eintrag hinterlegt werden muss:
-
-```json
-"settings": {
-    "terminal.integrated.env.windows": {
-        "OTA_PASSWORD": "4321"
-    }
-}
-```
-
-Test: 
-
-```powershell
-echo $env:OTA_PASSWORD
-```
+* `espota` steht für "ESP OTA"-Protokoll.
+* Der `upload_port` ist der Hostname oder die IP-Adresse.
+* In `upload_flags` ist das Passwort angegeben - hier indirekt über die separate Ini-Datei `secrets.ini`:
+  ```ini
+  [common]
+  ota_password = 4321
+  ```
+  **WICHTIG:** `secrets.ini` sollte per `.gitignore` vom Git-Repository ausgeschlossen werden!
 
 **Anmerkung:**
 
-Mit der Arduino IDE kann der Code auch drahtlos hochgeladen werden. 
-Wenn das Programm läuft, ist der Port des Entwicklungsboard keine COM-Schnittstelle mehr, sondern ein Netzwerk-Anschluss (Menüpunkt Tools/Port, u.U. erst nach Neustart sichtbar):
+Mit der Arduino IDE kann der Code auch drahtlos hochgeladen werden.
+Wenn das Programm läuft, ist der Port des Entwicklungsboards keine COM-Schnittstelle mehr, sondern ein Netzwerk-Anschluss (Menüpunkt Tools/Port, u.U. erst nach Neustart sichtbar):
 
 ![Tools > Port](./assets/OTA-Port.png)
 
 ## 💻 Beispiel-Code
 
-s. [sketches/OTA](/sketches/OTA/OTA.ino)
+s. [sketches/OTA_Test](/sketches/OTA_Test/OTA_Test.ino)

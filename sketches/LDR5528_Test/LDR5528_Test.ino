@@ -4,8 +4,8 @@
 
 #include <Arduino.h>
 
-const int valLight = 1100;
-const int valDark = 2500;
+constexpr int valLight = 1100;
+constexpr int valDark = 2500;
 
 void setup() {
     Serial.begin(115200);

@@ -15,7 +15,7 @@ public:
     /**
      * Konstruktor.
      * @param analogPin  ADC-Pin, an dem gemessen wird (AIN).
-     * @param fixedResistorOhm Wert des festen Widerstands in Ohm (Standard 10kΩ).
+     * @param pullupOhm Wert des festen Widerstands in Ohm (Standard 10 kΩ).
      * @param adcMax Maximaler ADC-Wert (z. B. 1023 für AVR, 4095 für ESP32)
      */
     explicit SensorLDR5528(uint8_t analogPin, float pullupOhm = 10000.0f, uint16_t adcMax = 4095);

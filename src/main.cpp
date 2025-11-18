@@ -91,11 +91,6 @@ unsigned long lastSensorRead = 0;     // Zeitpunkt der letzten Sensormessung
 unsigned long lastDisplayUpdate = 0;  // Zeitpunkt der letzten Display-Aktualisierung
 unsigned long lastCameraCapture = 0;  // Zeitpunkt der letzten Kameraaufnahme
 
-// Intervalle in Millisekunden
-const unsigned long SENSOR_READ_INTERVAL = 5000;    // Sensoren alle 5 Sekunden lesen
-const unsigned long DISPLAY_UPDATE_INTERVAL = 1000; // Display jede Sekunde aktualisieren
-const unsigned long CAMERA_CAPTURE_INTERVAL = 3600000; // Kamera alle 60 Minuten auslösen
-
 // === Funktionsprototypen ===
 void handleSensors();
 void handleControlLogic();
@@ -177,23 +172,23 @@ void setup() {
 
     // 5) Netzwerk initialisieren
     log("Verbinde mit WLAN...");
-    WiFi.mode(WIFI_STA); // Station Mode (Client)
-    WiFi.setHostname(HOSTNAME);
+    WiFiClass::mode(WIFI_STA); // Station Mode (Client)
+    WiFiClass::setHostname(HOSTNAME);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 20) { // max. 20 * 500ms = 10 Sekunden lang versuchen
+    while (WiFiClass::status() != WL_CONNECTED && attempts < 20) { // max. 20 * 500ms = 10 Sekunden lang versuchen
         delay(500);
         Serial.print(".");
         attempts++;
     }
     Serial.println();
-    if (WiFi.status() != WL_CONNECTED) {
+    if (WiFiClass::status() != WL_CONNECTED) {
         halt("WLAN FEHLER", "Verbindung fehlgeschlagen");
     }
     log("WLAN verbunden!");
     String ipMessage = "IP: " + WiFi.localIP().toString();
     log(ipMessage.c_str());
-    String hostMessage = "Host: " + String(WiFi.getHostname());
+    String hostMessage = "Host: " + String(WiFiClass::getHostname());
     log(hostMessage.c_str());
 
     // 6) OTA-Dienst starten
@@ -206,18 +201,18 @@ void setup() {
     configTime(GMT_OFFSET, DAYLIGHT_OFFSET, NTP_SERVER); // started Hintergrund-Task für Zeitsynchronisation 
     log("Synchronisiere Zeit...");
     attempts = 0;
-    struct tm timeinfo;
-    while (!getLocalTime(&timeinfo) && attempts < 20) { // max. 20 * 500ms = 10 Sekunden lang versuchen
+    tm timeInfo{};
+    while (!getLocalTime(&timeInfo) && attempts < 20) { // max. 20 * 500ms = 10 Sekunden lang versuchen
         delay(500);
         Serial.print(".");
         attempts++;
     }
     Serial.println();
-    if (!getLocalTime(&timeinfo)) {
+    if (!getLocalTime(&timeInfo)) {
         halt("NTP FEHLER", "Zeit nicht ermittelt");
     }
     char timeString[20];
-    strftime(timeString, sizeof(timeString), "%d.%m.%Y %H:%M:%S", &timeinfo);
+    strftime(timeString, sizeof(timeString), "%d.%m.%Y %H:%M:%S", &timeInfo);
     log(timeString);
 
     // --- Restliche Hardware-Komponenten initialisieren ---
@@ -451,12 +446,12 @@ void handleDisplay() {
  * @brief Implementiert die Steuerungslogik für alle Aktoren.
  */
 void handleControlLogic() {
-    struct tm timeinfo;
-    if (!getLocalTime(&timeinfo)) {
+    tm timeInfo{};
+    if (!getLocalTime(&timeInfo)) {
         log("Fehler beim Abrufen der Zeit."); // dürfte nie vorkommen, da im Setup die Zeit synchronisiert wurde
         return;
     }
-    int currentHour = timeinfo.tm_hour;
+    int currentHour = timeInfo.tm_hour;
 
     // -- Steuerung für die Lampen (A1 und A2) --
     
@@ -464,7 +459,7 @@ void handleControlLogic() {
         if (isnan(currentLightLux)) { // der Lichtsensor ist ausgefallen
             lamp1Relay.on(); // beide Lampen an
             lamp2Relay.on();
-        } else { // der Lichtsensensor funktioniert
+        } else { // der Lichtsensor funktioniert
 
             // TODO: Die Logik stimmt noch nicht!
             
@@ -476,7 +471,7 @@ void handleControlLogic() {
             */
 
             if (lamp1Relay.isOn() && lamp2Relay.isOn()) { // beide Lampen sind derzeit an
-                if (currentLightLux > LIGHT_LUX_THRESHOLD_DARK) { // das Tageslicht ist mittelhell
+                if (currentLightLux > LIGHT_LUX_THRESHOLD_DARK) { // das Tageslicht ist mittel-hell
                     if (random(2) == 0) {// Zufällig eine Lampe ausschalten
                         lamp1Relay.off(); 
                     } else {
@@ -484,7 +479,7 @@ void handleControlLogic() {
                     }
                 }
             } 
-            else if (lamp1Relay.isOn() || lamp2Relay.isOn()) { // nur eine Lampen ist derzeit an
+            else if (lamp1Relay.isOn() || lamp2Relay.isOn()) { // nur eine Lampe ist derzeit an
                 if (currentLightLux > LIGHT_LUX_THRESHOLD_BRIGHT) { // das Tageslicht ist sehr hell
                     lamp1Relay.off(); // beide Lampen ausschalten
                     lamp2Relay.off();
@@ -516,7 +511,7 @@ void handleControlLogic() {
     }
 
     /*
-    Strategie 2 für die Lichtsteuerung: Zeitliche Verzögerung (Trägheit einbauen)
+    Strategie 2 für die Lichtsteuerung: Verzögerung (Trägheit einbauen)
 
     Diese Strategie verhindert, dass das System auf kurzfristige Schwankungen (z.B. eine schnell vorbeiziehende Wolke) überreagiert.
 
@@ -525,10 +520,10 @@ void handleControlLogic() {
     **Wie du das umsetzen würdest:**
     Du bräuchtest zusätzliche globale Variablen, z.B. `unsigned long timeThresholdWasCrossed = 0;`.
     In `handleControlLogic` würdest du dann:
-    1.  Prüfen, ob `currentLightLux` über einer Schwelle liegt.
-    2.  Wenn ja, und `timeThresholdWasCrossed` ist `0`, setze `timeThresholdWasCrossed = millis();`.
-    3.  Wenn `currentLightLux` wieder unter die Schwelle fällt, setze `timeThresholdWasCrossed` zurück auf `0`.
-    4.  Schalte die Lampe erst dann, wenn `timeThresholdWasCrossed > 0` UND `millis() - timeThresholdWasCrossed > 300000` (5 Minuten).
+    1. Prüfen, ob `currentLightLux` über einer Schwelle liegt.
+    2. Wenn ja, und `timeThresholdWasCrossed` ist `0`, setze `timeThresholdWasCrossed = millis();`.
+    3. Wenn `currentLightLux` wieder unter die Schwelle fällt, setze `timeThresholdWasCrossed` zurück auf `0`.
+    4. Schalte die Lampe erst dann, wenn `timeThresholdWasCrossed > 0` UND `millis() - timeThresholdWasCrossed > 300000` (5 Minuten).
     */
 
     // -- Steuerung für den Heizer (A3) --

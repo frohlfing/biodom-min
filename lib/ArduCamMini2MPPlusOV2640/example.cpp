@@ -22,7 +22,7 @@
 #include "ArduCamMini2MPPlusOV2640.h"
 
 // GPIO-Pin für den SPI Chip Select der Kamera
-const uint8_t CAM_CS_PIN = 17;
+constexpr uint8_t CAM_CS_PIN = 17;
 
 // Erstelle eine Instanz der Bibliotheksklasse
 ArduCamMini2MPPlusOV2640 camera(CAM_CS_PIN);
@@ -43,7 +43,8 @@ void printHelp() {
 
 void setup() {
     Serial.begin(115200);
-    while (!Serial); // Warte auf die serielle Verbindung
+    while (!Serial) {}
+    // Warte auf die serielle Verbindung
     Serial.println("Starte ArduCAM-Funktionstest-Beispiel...");
 
     // Kamera initialisieren
@@ -53,7 +54,7 @@ void setup() {
     } else {
         Serial.println("FEHLER!");
         Serial.println("Kamera nicht gefunden. Bitte Verkabelung prüfen. Programm wird angehalten.");
-        while (1);
+        while (true);
     }
     
     printHelp();

@@ -15,8 +15,8 @@
 
 // NTP-Server und Zeitzonen
 const char* NTP_SERVER = "pool.ntp.org";    // NTP-Server
-const long  GMT_OFFSET = 3600;              // Mitteleuropäische Zeit (MEZ) = UTC+1 = 3600 Sekunden für Zeitzone "Berlin"
-const int   DAYLIGHT_OFFSET = 3600;         // Sommerzeit (MESZ) = UTC+2, also zusätzliche 3600 Sekunden  (Sommer-/Winterzeit wird automatisch umgestellt)
+constexpr long  GMT_OFFSET = 3600;              // Mitteleuropäische Zeit (MEZ) = UTC+1 = 3600 Sekunden für Zeitzone "Berlin"
+constexpr int   DAYLIGHT_OFFSET = 3600;         // Sommerzeit (MESZ) = UTC+2, also zusätzliche 3600 Sekunden (Sommer-/Winterzeit wird automatisch umgestellt)
 
 void setup() {
     Serial.begin(115200);
@@ -41,8 +41,8 @@ void setup() {
 
     // 3. Warten auf die erste Synchronisation
     Serial.print("Synchronisiere Zeit...");
-    struct tm timeinfo;
-    while (!getLocalTime(&timeinfo)) {
+    tm timeInfo{};
+    while (!getLocalTime(&timeInfo)) {
         delay(100);
         Serial.print(".");
     }
@@ -50,16 +50,16 @@ void setup() {
 
     // Uhrzeit ausgeben
     Serial.print("Aktuelle Zeit: ");
-    Serial.print(timeinfo.tm_hour);
+    Serial.print(timeInfo.tm_hour);
     Serial.print(":");
-    Serial.print(timeinfo.tm_min);
+    Serial.print(timeInfo.tm_min);
     Serial.print(":");
-    Serial.println(timeinfo.tm_sec);
+    Serial.println(timeInfo.tm_sec);
 }
 
 void loop() {
-    struct tm timeinfo;
-    if (!getLocalTime(&timeinfo)) {
+    tm timeInfo{};
+    if (!getLocalTime(&timeInfo)) {
         Serial.println("Fehler beim Abrufen der Zeit."); // dürfte nie vorkommen, da im Setup die Zeit synchronisiert wurde
         delay(1000);
         return;
@@ -67,7 +67,7 @@ void loop() {
 
     // Zeitinformationen formatieren und ausgeben
     char timeString[20];
-    strftime(timeString, sizeof(timeString), "%d.%m.%Y %H:%M:%S", &timeinfo);
+    strftime(timeString, sizeof(timeString), "%d.%m.%Y %H:%M:%S", &timeInfo);
     Serial.println(timeString);
     delay(1000);
 }

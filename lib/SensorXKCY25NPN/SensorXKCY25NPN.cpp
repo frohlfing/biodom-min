@@ -30,12 +30,12 @@ bool SensorXKCY25NPN::isWaterDetected() const {
     return _waterDetected;
 }
 
-int SensorXKCY25NPN::getLastError() const {
+int SensorXKCY25NPN::getLastError() {
     // Dieser Sensor hat keine Fehlererkennung.
     return 0;
 }
 
-const char* SensorXKCY25NPN::getErrorMessage() const {
+const char* SensorXKCY25NPN::getErrorMessage() {
     // Entsprechend gibt es nur die "OK"-Meldung.
     return "OK";
 }

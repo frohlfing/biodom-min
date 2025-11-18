@@ -23,7 +23,7 @@ public:
      * @brief Konstruktor.
      * @param resetPin Optionaler GPIO-Pin für den Reset des Displays.
      */
-    OLEDDisplaySH1106(const uint8_t resetPin = U8X8_PIN_NONE);
+    explicit OLEDDisplaySH1106(const uint8_t resetPin = U8X8_PIN_NONE);
 
     /**
      * @brief Initialisiert das Display.
@@ -105,8 +105,8 @@ private:
     U8G2_SH1106_128X64_NONAME_F_HW_I2C _u8g2; // Die Instanz der U8g2-Grafikbibliothek, die das Display steuert.
 
     // --- Zustandsvariablen für den Log-Modus ---
-    static const uint8_t LOG_MAX_LINES = 12;    // Die maximale Anzahl von Zeilen, die der interne Log-Puffer speichern kann.
-    static const uint8_t LOG_VISIBLE_LINES = 6; // Die Anzahl der Log-Zeilen, die gleichzeitig auf dem Display sichtbar sind.
+    static constexpr uint8_t LOG_MAX_LINES = 12;    // Die maximale Anzahl von Zeilen, die der interne Log-Puffer speichern kann.
+    static constexpr uint8_t LOG_VISIBLE_LINES = 6; // Die Anzahl der Log-Zeilen, die gleichzeitig auf dem Display sichtbar sind.
     String _logLines[LOG_MAX_LINES];            // Der Puffer, der die Textzeilen des Logs speichert.
     int _logLineCount = 0;                      // Der Puffer, der die Textzeilen des Logs speichert.
     int _logScrollOffset = 0;                   // Die aktuelle Anzahl der im Puffer gespeicherten Log-Zeilen.
@@ -119,8 +119,8 @@ private:
     // --- Zustandsvariablen für das Dashboard ---
     String _dashboardText[4];         // Ein Array, das die Texte für die vier Quadranten speichert.
     const uint8_t* _dashboardIcon[4] = {nullptr, nullptr, nullptr, nullptr}; // Ein Array, das die Pointer auf die Icon-Bitmaps der vier Quadranten speichert.
-    uint8_t _dashboardIconWidth[4];   // Speichert die Breite der Icons für die korrekte Positionierung.
-    uint8_t _dashboardIconHeight[4];  // Speichert die Höhe der Icons für die korrekte Positionierung.
+    uint8_t _dashboardIconWidth[4]{};   // Speichert die Breite der Icons für die korrekte Positionierung.
+    uint8_t _dashboardIconHeight[4]{};  // Speichert die Höhe der Icons für die korrekte Positionierung.
     
     /**
      * @brief Interne Funktion zum Zeichnen des Dashboards in den Display-Puffer.
@@ -130,7 +130,7 @@ private:
     // --- Zustandsvariablen für den Alert-Modus ---
     String _alertMessage;             // Speichert die anzuzeigende Warnmeldung.
     bool _isBlinking = false;         // Flag, das steuert, ob die Warnmeldung blinken soll.
-    bool _alertVisible = true;        // Internes Flag für den Blink-Effekt (an/aus).
+    bool _alertVisible = true;        // Internes Flag für den Blinkeffekt (an/aus).
     unsigned long _lastBlinkTime = 0; // Zeitstempel des letzten Blink-Zustandswechsels.
     
     /**

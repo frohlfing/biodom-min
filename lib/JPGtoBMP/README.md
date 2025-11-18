@@ -1,6 +1,6 @@
 # 📌 JPGtoXBM
 
-Diese Bibliothek konvertiert ein JPG-Bild (welches z.B. von der ArduCAM Mini aufgenommen wurde) in das XBM-Format, so dass es auf demOLED Displays SSH1106 angezeigt werden kann.
+Diese Bibliothek konvertiert ein JPG-Bild (welches z.B. von der ArduCAM Mini aufgenommen wurde) in das XBM-Format, sodass es auf demOLED Displays SSH1106 angezeigt werden kann.
 
 Weitere Details siehe:  
  [Proof Of Concept](./../../docs/JPGtoXBM.md)
