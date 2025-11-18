@@ -5,6 +5,7 @@
 #include <SimpleDHT.h>
 
 int pinDHT22 = 13;
+//int pinDHT22 = 27;
 SimpleDHT22 dht22(pinDHT22);
 
 void setup() {
@@ -21,8 +22,9 @@ void loop() {
         Serial.print(","); Serial.println(SimpleDHTErrDuration(err)); delay(2000);
         return;
     }
-    Serial.print("Sample OK: ");
-    Serial.print((float)temperature); Serial.print(" *C, ");
-    Serial.print((float)humidity); Serial.println(" RH%");
+    Serial.print("Temperatur_Celsius:");
+    Serial.print((float)temperature);
+    Serial.print(",Luftfeuchtigkeit_Prozent:");
+    Serial.println((float)humidity);
     delay(2500); // DHT22 sampling rate is 0.5HZ.
 }

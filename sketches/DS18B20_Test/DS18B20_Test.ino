@@ -12,18 +12,18 @@
 OneWire oneWire(ONE_WIRE_BUS);
 
 // Pass our oneWire reference to Dallas Temperature.
-DallasTemperature sensors(&oneWire);
+DallasTemperature sensor(&oneWire);
 
 void setup(void) {
     Serial.begin(115200);
     Serial.println("DS18B20 Test");
-    sensors.begin();
+    sensor.begin();
 }
 
 void loop(void) {
-    sensors.requestTemperatures();
+    sensor.requestTemperatures();
     delay(1500);
-    float tempC = sensors.getTempCByIndex(0);
+    float tempC = sensor.getTempCByIndex(0);
     if (tempC != DEVICE_DISCONNECTED_C) {
         Serial.print("Temperature:");
         Serial.println(tempC);

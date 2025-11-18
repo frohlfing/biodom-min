@@ -29,6 +29,12 @@ Dabei wird `workspace.json` im `AppData`-Ordner des Benutzers geöffnet, in der 
 }
 ```
 
+Test: 
+
+```powershell
+echo $env:OTA_PASSWORD
+```
+
 **Anmerkung:**
 
 Mit der Arduino IDE kann der Code auch drahtlos hochgeladen werden. 

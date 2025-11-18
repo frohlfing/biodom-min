@@ -2,7 +2,6 @@
  * NTP (Network Time Protocol)
  *
  * Beispiel zur Zeitsynchronisation mit einem NTP-Server auf dem ESP32.
- * Details hierzu `siehe /docs/NTP.md`.
  */
 
 #include <WiFi.h>
@@ -12,7 +11,6 @@
 //constexpr char HOSTNAME[] = "biodom-mini-dev";
 //constexpr char WIFI_SSID[] = "WOLKE7";
 //constexpr char WIFI_PASSWORD[] = "1234";
-//constexpr char OTA_PASSWORD[] = "4321";
 #include "secrets.h"
 
 // NTP-Server und Zeitzonen

@@ -460,42 +460,76 @@ void handleControlLogic() {
 
     // -- Steuerung für die Lampen (A1 und A2) --
     
-    if (currentHour >= LIGHT_ON_HOUR && currentHour < LIGHT_OFF_HOUR) {
-        // "Licht an"-Zeitfenster ist gegeben
-        // Messwert des Tageslichtsensors abgreifen
-        if (!isnan(currentLightLux)) {
-            // Wir haben einen gültigen Messwert für das Tageslicht .
-            if (currentLightLux > LIGHT_LUX_THRESHOLD_BRIGHT) {
-                // Hell genug: Beide Lampen können aus bleiben.
-                lamp1Relay.off();
-                lamp2Relay.off();
-            } else if (currentLightLux > LIGHT_LUX_THRESHOLD_DARK) {
-                // Mittelhell: Eine Lampe zur Unterstützung einschalten.
-                 if (random(2) == 0) {
-                    // Fall 1: Wähle Lampe 1
-                    lamp1Relay.on();
+    if (currentHour >= LIGHT_ON_HOUR && currentHour < LIGHT_OFF_HOUR) { // "Licht an"-Zeitfenster ist gegeben
+        if (isnan(currentLightLux)) { // der Lichtsensor ist ausgefallen
+            lamp1Relay.on(); // beide Lampen an
+            lamp2Relay.on();
+        } else { // der Lichtsensensor funktioniert
+
+            // TODO: Die Logik stimmt noch nicht!
+            
+            /*
+            Strategie 1: Hysterese
+            Es gibt zwei Schellen:
+            * Einschalt-Schwelle (`THRESHOLD_DARK`): Bei dem bei ausgeschalteten Lampen das Tageslicht zu dunkel ist.
+            * Ausschalt-Schwelle (`THRESHOLD_BRIGHT`): Bei dem bei eingeschalteten Lampen das Tageslicht zu hell ist. 
+            */
+
+            if (lamp1Relay.isOn() && lamp2Relay.isOn()) { // beide Lampen sind derzeit an
+                if (currentLightLux > LIGHT_LUX_THRESHOLD_DARK) { // das Tageslicht ist mittelhell
+                    if (random(2) == 0) {// Zufällig eine Lampe ausschalten
+                        lamp1Relay.off(); 
+                    } else {
+                        lamp2Relay.off();
+                    }
+                }
+            } 
+            else if (lamp1Relay.isOn() || lamp2Relay.isOn()) { // nur eine Lampen ist derzeit an
+                if (currentLightLux > LIGHT_LUX_THRESHOLD_BRIGHT) { // das Tageslicht ist sehr hell
+                    lamp1Relay.off(); // beide Lampen ausschalten
                     lamp2Relay.off();
-                } else {
-                    // Fall 2: Wähle Lampe 2
-                    lamp1Relay.off();
+                }
+                // Bedingung zum Zuschalten von Lampe 2 (wenn es wieder dunkler wird)
+                else if (currentLightLux < LIGHT_LUX_THRESHOLD_DARK) { // das Tageslicht ist dunkler
+                    lamp1Relay.on(); // beide Lampen einschalten
                     lamp2Relay.on();
                 }
-            } else {
-                // Zu dunkel: Volle Beleuchtung mit beiden Lampen.
-                lamp1Relay.on();
-                lamp2Relay.on();
             }
-        } else {
-            // Der Lichtsensor liefert keinen gültigen Wert.
-            // Um die Pflanzen nicht zu gefährden, schalten wir im Zweifel beide Lampen ein.
-            lamp1Relay.on();
-            lamp2Relay.on();
+            else { // beide Lampen sind derzeit aus
+                if (currentLightLux < LIGHT_LUX_THRESHOLD_BRIGHT) { // das Tageslicht ist nicht sehr hell
+                    if (random(2) == 0) {// Zufällig eine Lampe einschalten
+                        lamp1Relay.on(); 
+                    } else {
+                        lamp2Relay.on();
+                    }
+                }
+                if (currentLightLux < LIGHT_LUX_THRESHOLD_DARK) { // das Tageslicht ist dunkel
+                    lamp1Relay.on();
+                    lamp2Relay.on();
+                }
+            }
         }
     } else {
         // Außerhalb des Zeitfensters: Beide Lampen sind immer aus, egal wie dunkel es ist.
         lamp1Relay.off();
         lamp2Relay.off();
     }
+
+    /*
+    Strategie 2 für die Lichtsteuerung: Zeitliche Verzögerung (Trägheit einbauen)
+
+    Diese Strategie verhindert, dass das System auf kurzfristige Schwankungen (z.B. eine schnell vorbeiziehende Wolke) überreagiert.
+
+    **Die Idee:** Eine Lampe wird erst dann an- oder ausgeschaltet, wenn der Schwellwert für eine **bestimmte Zeit** (z.B. 5 Minuten) ununterbrochen über- oder unterschritten wurde.
+
+    **Wie du das umsetzen würdest:**
+    Du bräuchtest zusätzliche globale Variablen, z.B. `unsigned long timeThresholdWasCrossed = 0;`.
+    In `handleControlLogic` würdest du dann:
+    1.  Prüfen, ob `currentLightLux` über einer Schwelle liegt.
+    2.  Wenn ja, und `timeThresholdWasCrossed` ist `0`, setze `timeThresholdWasCrossed = millis();`.
+    3.  Wenn `currentLightLux` wieder unter die Schwelle fällt, setze `timeThresholdWasCrossed` zurück auf `0`.
+    4.  Schalte die Lampe erst dann, wenn `timeThresholdWasCrossed > 0` UND `millis() - timeThresholdWasCrossed > 300000` (5 Minuten).
+    */
 
     // -- Steuerung für den Heizer (A3) --
 
