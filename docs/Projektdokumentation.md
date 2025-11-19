@@ -28,7 +28,7 @@ Das Ziel ist ein Mini-Gewächshaus für anspruchsvolle Pflanzen, das automatisch
   * [7. Schaltplan](#7-schaltplan)
   * [8. Programmierung](#8-programmierung)
 
-  * [Anhang](#anhang-)
+  * [Anhang](#anhang)
 
 ## 1. Gehäuse
 
@@ -79,7 +79,7 @@ Bewässerungsschlauch 4/6 mm (passend zur Wasserpumpe)
 [Amazon](https://www.amazon.de/gp/product/B0DSP1KB8S)
 7,98 €; "Einzelpreis": 3,99 €		
 
-5m Schlauch, 10 Tropf-Sprinkler, 2 Ventile, Verbinder (reicht locker für 2 Häuschen)
+5 m Schlauch, 10 Tropf-Sprinkler, 2 Ventile, Verbinder (reicht locker für 2 Häuschen)
 
 ### Elektronik-Box
 
@@ -104,12 +104,12 @@ Lochrasterplatine, 160 x 100 mm, blau
 7,99 €
 
 * Durchkontaktiert, runde Pads
-* Rastermaß: 2,54mm
+* Rastermaß: 2,54 mm
 * 1,6 mm dick
 
 ### Klinkenstecker und -Buchsen für die Sensoren (Kamera ausgenommen)
 
-3.5mm Stereo-Klinkenstecker und -Buchse 
+3.5 mm Stereo-Klinkenstecker und -Buchse 
 
 ![Klinkenstecker und -Buchse](https://m.media-amazon.com/images/I/618a1OcxYIL._SX342_.jpg)
 
@@ -130,7 +130,7 @@ https://www.amazon.de/dp/B09TK2HNKD
 
 ### Hohlstecker und -Buchen für die Aktoren und Stromversorgung
 
-DC Power Jack Buchse und Stecker, 2.1mm, 2 Polig 
+DC Power Jack Buchse und Stecker, 2.1 mm, 2 Polig 
 
 Auch DC-Stecker und DC-Buchse genannt.
 
@@ -169,11 +169,11 @@ Auch unter "Pinheader" zu finden.
 
 ![Kabelschlauch](https://m.media-amazon.com/images/I/71t6eXtVD6L._AC_SY450_.jpg)
 
-6 mm Durchmesser, 3m: 
+6 mm Durchmesser, 3 m: 
 [Amazon](https://www.amazon.de/dp/B07FW5H57B)
 7,99 €
 
-13 mm Durchmesser, 3m: 
+13 mm Durchmesser, 3 m: 
 [Amazon](https://www.amazon.de/dp/B07FW3GTXB)
 7,99 €
 
@@ -187,7 +187,7 @@ Auch unter "Pinheader" zu finden.
 **Schraubklemmen Set**
 ![Schraubklemmen](https://m.media-amazon.com/images/I/61ocvyBAO2L._SX679_.jpg)
 [Amazon](https://www.amazon.de/dp/B082ZNRQMJ)
-8,99€
+8,99 €
 
 ## 2. Steuereinheit
 
@@ -218,8 +218,8 @@ Das Modell mit UCD-C macht nur Probleme. Keins meiner UCB-C-Kabel hat funktionie
                                        ┌────────────────┐
                            +3.3V Out ──┤ 3V3 ESP32  GND ├── GND
                                      ──┤ EN  DevKit G23 ├── GPIO23 SPI_MOSI ──► Kamera + SD-Karte
-    Reserve anlg./dgl. In ──► GPIO36 ──┤ SP  C V2   G22 ├── GPIO22 I2C_SCL  ──► Kamera + Display + Lichtstärke
-         (frei anlg./dgl. In) GPIO39 ──┤ SN         TXD ├── GPIO1  (UART0_TX)
+  Reserve analog./dgl. In ──► GPIO36 ──┤ SP  C V2   G22 ├── GPIO22 I2C_SCL  ──► Kamera + Display + Lichtstärke
+       (frei analog./dgl. In) GPIO39 ──┤ SN         TXD ├── GPIO1  (UART0_TX)
     Bodenfeuchte (analog) ──► GPIO34 ──┤ G34        RXD ├── GPIO3  (UART0_RX)
               Wasserstand ──► GPIO35 ──┤ G35        G21 ├── GPIO21 I2C_SDA  ◄─► Kamera + Display + Lichtstärke
          Dunst Relais IN7 ◄── GPIO32 ──┤ G32        GND ├── GND
@@ -421,11 +421,11 @@ Der Sensor hat eine Betriebsspannung von 5 V. Die maximale Ausgangsspannung lieg
 
 **Pinbelegung:**
 <pre>
-┌────────────────┐
-│ Capacitve  GND ├──(schwarz)─O─── GND 
-│ Hygrometer VCC ├──────(rot)─O─── +5V
-│ v1.2      AOUT ├─►───(gelb)─O─►─ GPIO34
-└────────────────┘
+┌─────────────────┐
+│ Capacitive  GND ├──(schwarz)─O─── GND 
+│ Hygrometer  VCC ├──────(rot)─O─── +5V
+│ v1.2       AOUT ├─►───(gelb)─O─►─ GPIO34
+└─────────────────┘
 </pre>   
 
 **Messbereich:**
@@ -472,9 +472,9 @@ void loop() {
  
 Die Messung ergibt 
 * im Wasser: 995 bis 1055 => unter 1100
-* in der Luft: 2642 bis 2734  => über 2500
+* in der Luft: 2642 bis 2734 => über 2500
 
-Der folgende Code verwendet die Rohwerte und ordnet sie einem Bereich von 0 bis 100% zu:
+Der folgende Code verwendet die Rohwerte und ordnet sie einem Bereich von 0 bis 100 % zu:
 
 ```
 const int valWater = 1100;
@@ -647,7 +647,7 @@ LED Grow Light 12V/60W, Vollspektrum, 4:1, IP65
 * Rot:Blau = 4:1
 * Vollspektrum
 * IP65 (wasserdicht)
-* 5m-Streifen (1cm breit) mit 300 LEDs (SMD 5050)
+* 5m-Streifen (1 cm breit) mit 300 LEDs (SMD 5050)
 * Hersteller: Tesfish
 
 12V/60W = 5A (lt. Hersteller) -> Damit ist das Limit für ein Relais des Relais-Moduls erreicht. Daher teile ich den 
@@ -672,7 +672,7 @@ Lampe 2 O─│┼O─▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ▓▓▓�
 * Leistung pro Streifenhälfte (2,5m): Spannung: 12 V, Strom: 2 A -> Reale Leistung: P = U * I = 12 V * 2 A = 24 Watt
 * Leistung des gesamten Streifens (2 x 2,5m): Spannung: 11.9 V, Strom: 3.8 A -> Reale Gesamtleistung: P = 11.9 V * 3.8 A ≈ 45 Watt
 
-Der gemessene Strom ist unter 4A, es würde 1 Relais reichen. (Sicherheitsmarge von 20% ist ok). 
+Der gemessene Strom ist unter 4A, es würde 1 Relais reichen. (Sicherheitsmarge von 20 % ist ok). 
 Aber dann kann ich nicht mehr zwei Helligkeitsstufen schalten. 
 
 **Pinbelegung:**
@@ -829,7 +829,7 @@ Mini 370 Membranpumpe, 12V
 [Amazon](https://www.amazon.de/dp/B0DX5PVTBQ)
 8,98 €
 
-Wird mit 1m Schlauch geliefert (5 mm innen).
+Wird mit 1 m Schlauch geliefert (5 mm innen).
 
 * max. 300mA
 * Saughöhe: 2m
@@ -984,11 +984,11 @@ Die Karte sollte FAT32-formatiert sein.
 Ich habe noch eine alte 4 GB SD-Karte Class 4. Wie lang reicht die Karte, wenn pro Stunde ein Bild geschossen wird? 
 Wie schnell ist sie in der Praxis?
 
-* 93% einer SD-Karte sind durchschnittlich praktisch nutzbar.
-* Die höchste Auflösung der ArduCAM-Kamera ist  1600 x 1200 Pixel. Die Bilder werden im JPEG-Format gespeichert. Ich schätze 600 KB durchschnittlich.  
+* 93 % einer SD-Karte sind durchschnittlich praktisch nutzbar.
+* Die höchste Auflösung der ArduCAM-Kamera ist 1600 x 1200 Pixel. Die Bilder werden im JPEG-Format gespeichert. Ich schätze 600 KB durchschnittlich.  
 
 Es folgt:
-* 4 GB: 4 GB * 0,93 * 1024 * 1024 / 600 KB = ≈ 6500 Bilder => 6500 / 24  ≈ **270 Tage**
+* 4 GB: 4 GB * 0,93 * 1024 * 1024 / 600 KB = ≈ 6500 Bilder => 6500 / 24 ≈ **270 Tage**
 * 32 GB: 32 GB * 0,93 * 1024 * 1024 / 600 KB = ≈ 52000 Bilder => 52000 / 24 / 365 ≈ **6 Jahre**
 
 Theoretische Schreibgeschwindigkeit pro Bild:
@@ -1029,8 +1029,8 @@ Mit geschirmtem Kabel und reduziertem Takt (1–2 MHz) sind 50 cm möglich.
 
 Tipps für eine stabile SPI-Verbindung:
 
-* SCLK mit GND twisten → reduziert EM-Störungen
-* MISO mit GND twisten → schützt das empfindlichste Signal
+* SCLK mit GND verdrillen → reduziert EM-Störungen
+* MISO mit GND verdrillen → schützt das empfindlichste Signal
 * Jede zweite Leitung auf GND bei Flachbandkabel
 * Pull-Up-Widerstände an CS und MISO können helfen
 * Serienwiderstand (100 Ω) direkt am Mikrocontroller-Ausgang → reduziert Reflexionen
@@ -1071,7 +1071,7 @@ die ca. 16 GPIO-Pins belegt (also fast alle verfügbaren). Die ArduCAM belegt da
 
 [Arducam_mini 1.0.1 by Arducam](https://github.com/ArduCAM/Arducam_mini)
 
-Leider ist die Bibliothek so konzipiert, dass die Datei .\Arduino\libraries\Arducam_mini\src\memorysaver.h für die jeweilige Hardware angepasst werden muss. Für meine Kamera muss diese Definition einkommentiert werden:
+Leider ist die Bibliothek so konzipiert, dass die Datei ./Arduino/libraries/Arducam_mini/src/memorysaver.h für die jeweilige Hardware angepasst werden muss. Für meine Kamera muss diese Definition einkommentiert werden:
 	#define OV2640_MINI_2MP_PLUS
 
 ### Z4: LED
@@ -1190,7 +1190,7 @@ Den Sachaltplan habe ich mit KiCad 9.0 erstellt.
 
 ![Leiterplatte.png](assets/Leiterplatte.png)
 
-## 8. Programmierung 
+## 8. Programmierung
 
 ### Entwicklungsumgebung / Technologie-Stack
 
@@ -1202,7 +1202,7 @@ Den Sachaltplan habe ich mit KiCad 9.0 erstellt.
 
 Mit der PlatformUI wird für jedes Bauteil eine lokale Bibliothek bereitgestellt und ausführlich dokumentiert.
 
-Es wird auch jeweils eine Bibliothek für das Webinterface, für OTA und für den Zugriff auf die  Sollwerte (als persistentes Dictionary o.ä.) bereitgestellt (um `main.cpp` möglichst schlank halten zu können). 
+Es wird auch jeweils eine Bibliothek für das Webinterface, für OTA und für den Zugriff auf die Sollwerte (als persistentes Dictionary o.ä.) bereitgestellt (um `main.cpp` möglichst schlank halten zu können). 
 
 ### Steuerungslogik
 
@@ -1244,42 +1244,42 @@ Es wird folgende Steuerungslogik programmiert (in `main.cpp`):
 
 *   **Lichtsteuerung (A1 und A2):**  
 Die Lampen können grundsätzlich nur innerhalb eines festgelegten Zeitfensters aktiv werden, das durch `LIGHT_ON_HOUR` (Einschaltzeit) und `LIGHT_OFF_HOUR` (Ausschaltzeit) definiert ist. Außerhalb dieser Zeit bleiben die Lampen immer aus. Innerhalb des Zeitfensters misst der Lichtsensor (S5) kontinuierlich das Tageslicht. Basierend auf den Schwellwerten `LIGHT_LUX_THRESHOLD_BRIGHT` und `LIGHT_LUX_THRESHOLD_DARK` wird die künstliche Beleuchtung dynamisch angepasst:
-    *   **Mittleres Tageslicht:**  Wenn das Tageslicht den mittleren Schwellwert (`_DARK`) überschreitet, reicht eine Lampe, die andere wird ausgeschaltet.
+    *   **Mittleres Tageslicht:** Wenn das Tageslicht den mittleren Schwellwert (`_DARK`) überschreitet, reicht eine Lampe, die andere wird ausgeschaltet.
     *   **Helles Tageslicht:** Wenn das Tageslicht den oberen Schwellwert (`_BRIGHT`) überschreitet, werden beide Lampen ausgeschaltet.
     *   Ansonsten werden beide Lampen eingeschaltet.
 
 *   **Heizungssteuerung (A3):**  
-Die Heizmatte wird aktiviert, wenn die **Bodentemperatur (S2)** unter den Zielwert `SOIL_TEMPERATUR_TARGET` fällt. Um ein ständiges An- und Ausschalten (Flattern) zu verhindern, wird eine Hysterese implementiert: Die Heizung schaltet sich erst wieder aus, wenn die Temperatur den Zielwert um 0.5°C überschreitet.
+Die Heizmatte wird aktiviert, wenn die **Bodentemperatur (S2)** unter den Zielwert `SOIL_TEMPERATUR_TARGET` fällt. Um ein ständiges An- und Ausschalten (Flattern) zu verhindern, wird eine Hysterese implementiert: Die Heizung schaltet sich erst wieder aus, wenn die Temperatur den Zielwert um 0.5 °C überschreitet.
 
-*   **Lüftersteuerung (A4):**   
+*   **Lüftersteuerung (A4):**
 Der Lüfter wird aktiviert, wenn die **Raumtemperatur (S1)** den Schwellwert `AIR_TEMPERATUR_THRESHOLD_HIGH` überschreitet. Er läuft dann für eine feste Dauer von `FAN_COOLDOWN_DURATION_MS`, um die warme und feuchte Luft effektiv abzuführen, und schaltet sich danach automatisch ab. Dies verhindert eine zu schnelle Austrocknung durch Dauerbetrieb.
 
-*   **Bewässerungssteuerung (A5):**   
+*   **Bewässerungssteuerung (A5):** 
 Die Wasserpumpe wird aktiviert, wenn die **Bodenfeuchte (S3)** unter den Zielwert `SOIL_MOISTURE_TARGET` fällt. Die Pumpe läuft dann für eine feste Dauer von `WATERING_DURATION_MS`, um eine definierte Menge Wasser abzugeben.  
 **Ausnahme:** Die Pumpe wird niemals aktiviert, wenn der **Wasserstandsensor (S4)** meldet, dass der Wasserbehälter leer ist, um ein Trockenlaufen zu verhindern.
 
-*   **Luftfeuchtesteuerung (A6):** Der Ultraschall-Vernebler (Dunst) wird eingeschaltet, wenn die **relative Luftfeuchtigkeit (S1)** unter den Zielwert `HUMIDITY_TARGET` sinkt. Auch hier sorgt eine Hysterese dafür, dass er sich erst wieder abschaltet, wenn die Luftfeuchtigkeit 5% über dem Zielwert liegt.   
-**Ausnahme:**  Der Vernebler wird nur aktiviert, wenn der **Wasserstandsensor (S4)** ausreichend Wasser meldet.
+*   **Luftfeuchtesteuerung (A6):** Der Ultraschall-Vernebler (Dunst) wird eingeschaltet, wenn die **relative Luftfeuchtigkeit (S1)** unter den Zielwert `HUMIDITY_TARGET` sinkt. Auch hier sorgt eine Hysterese dafür, dass er sich erst wieder abschaltet, wenn die Luftfeuchtigkeit 5 % über dem Zielwert liegt. 
+**Ausnahme:** Der Vernebler wird nur aktiviert, wenn der **Wasserstandsensor (S4)** ausreichend Wasser meldet.
 
-*   **Wasserstandsüberwachung (S4):** Der Füllstandsensor wird kontinuierlich überwacht. Wenn er einen niedrigen Wasserstand (`!WATER_LEVEL_TRIGGERED`) meldet, wird auf dem Display eine bildschirmfüllende, blinkende Warnung angezeigt. Zusätzlich werden Pumpe (A5) und Vernebler (A6) deaktiviert.
+*   **Wasserstands-Überwachung (S4):** Der Füllstandsensor wird kontinuierlich überwacht. Wenn er einen niedrigen Wasserstand (`!WATER_LEVEL_TRIGGERED`) meldet, wird auf dem Display eine bildschirmfüllende, blinkende Warnung angezeigt. Zusätzlich werden Pumpe (A5) und Vernebler (A6) deaktiviert.
 
 *   **Kamerasteuerung (Z3):** In einem festen Intervall (z.B. alle 60 Minuten) wird ein Foto in hoher Auflösung (1600x1200) aufgenommen und auf der SD-Karte (Z2) gespeichert. Der Dateiname enthält einen Zeitstempel, um eine chronologische Sortierung zu ermöglichen (z.B. `img_20241017_143000.jpg`).
 
 ### Optimale Klimawerte
 
-Eine Internet-Recherche über optimale Klimawerte für tropische Pflanzen ergab folgendes:
+Eine Internet-Recherche über optimale Klimawerte für tropische Pflanzen ergab Folgendes:
 
 *   **Temperatur:** 
-    - Tropische Pflanzen, die oft aus Regenwäldern stammen, benötigen ein stabiles Klima mit hoher Luftfeuchtigkeit und gleichmäßig warmen Temperaturen. [1]
+    - Tropische Pflanzen, die oft aus Regenwäldern stammen, benötigen ein stabiles Klima mit hoher Luftfeuchtigkeit und gleichmäßig hohen Temperaturen. [1]
 
-    - Für tropische Pflanzen sind Tagestemperaturen zwischen 20°C und 30°C ideal. [2]
+    - Für tropische Pflanzen sind Tagestemperaturen zwischen 20 °C und 30 °C ideal. [2]
 
-    - Nachts sollten die Temperaturen nicht wesentlich unter 20°C fallen. [3]
+    - Nachts sollten die Temperaturen nicht wesentlich unter 20 °C fallen. [3]
 
     - Die Bodentemperatur ist für die Wurzelaktivität ebenfalls entscheidend und sollte im warmen Bereich liegen. [2]
 
 *   **Luftfeuchtigkeit:** 
-    - Eine hohe relative Luftfeuchtigkeit ist für die meisten tropischen Pflanzen essenziell, um die Transpiration über die Blätter zu minimieren. Werte zwischen 60% und 80% sind optimal. [2]
+    - Eine hohe relative Luftfeuchtigkeit ist für die meisten tropischen Pflanzen essenziell, um die Transpiration über die Blätter zu minimieren. Werte zwischen 60 % und 80 % sind optimal. [2]
 
 *   **Bodenfeuchte:**  
     - Der Boden sollte konstant feucht, aber niemals durchnässt sein. [4]
@@ -1312,7 +1312,7 @@ Damit lege ich folgende Sollwerte als Voreinstellung fest (diese können per Web
 ### Funktionsumfang
 
 * **Bootvorgang:**
-  Nach dem Start wird eine Funktions-Prüfung durchgeführt. Die Ergebnisse scrollen durch das Display. Wenn alles funktioniert, wird ein Splash-Screen (mein Portrait) für en paar Sekunden angezeigt. Danach wird das Dashboard angezeigt. 
+  Nach dem Start wird eine Funktionsprüfung durchgeführt. Die Ergebnisse scrollen durch das Display. Wenn alles funktioniert, wird ein Splash-Screen (mein Portrait) für ein paar Sekunden angezeigt. Danach wird das Dashboard angezeigt. 
 
 * **Dashboard:**
   Das Dashboard teilt den Bildschirm in vier gleichmäßige Bereiche auf. In jedem Bereich wird ein Messwert angezeigt. 
@@ -1335,13 +1335,13 @@ Damit lege ich folgende Sollwerte als Voreinstellung fest (diese können per Web
   Diese unterliegen der [Universal Multimedia License von Icons8](https://intercom.help/icons8-7fb7577e8170/en/articles/5534926-universal-multimedia-license-agreement-for-icons8).
   Demnach dürfen sie verwendet werden, solange das Projekt nicht-kommerziell ist. 
   
-  Die Icons habE ich mit GIMP in das XMB-Format konvertiert und im `Include`-Verzeichnis gespeichert, so dass sie auf dem OLED-Display angezeigt werden können.
+  Die Icons habE ich mit GIMP in das XMB-Format konvertiert und im `Include`-Verzeichnis gespeichert, sodass sie auf dem OLED-Display angezeigt werden können.
 
-* **Warnung bei niedrigen Wasserstand:**
-  Bevor der Wasserreservoir (Teich) trockenläuft, soll nicht das Dashboard, sondern eine blinkende Warnung auf dem Display angezeigt werden (gern mit Icon). Über das Handy soll der Benutzer auch gewarnt werden (per E-Mail?).
+* **Warnung bei niedrigem Wasserstand:**
+  Bevor der Wasserreservoir (Teich) trocken läuft, soll nicht das Dashboard, sondern eine blinkende Warnung auf dem Display angezeigt werden (gern mit Icon). Über das Handy soll der Benutzer auch gewarnt werden (per E-Mail?).
 
 * **Bild aufnehmen:**
-  Nach einem festegelegten Intervall (alle x Stunden) wird ein Bild geschossen und auf der SD-Karte gespeichert. Direkt danach wird ein weiteres Bild mit niedrigster Auflösung erzeugt und auf dem Display für ein paar Sekunden angezeigt, um zu zeigen, dass ein Bild gespeichert wurde. 
+  Nach einem festgelegten Intervall (alle x Stunden) wird ein Bild geschossen und auf der SD-Karte gespeichert. Direkt danach wird ein weiteres Bild mit niedrigster Auflösung erzeugt und auf dem Display für ein paar Sekunden angezeigt, um zu zeigen, dass ein Bild gespeichert wurde. 
 
 * **Webinterface:**
 
